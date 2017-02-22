@@ -29,8 +29,6 @@ namespace CityGen
 
         public void makeNoises(float xOffset, float yOffset, float freq = 1f)
         {
-            Debug.Log(xOffset);
-            Debug.Log(yOffset);
             this.xOffset = xOffset;
             this.yOffset = yOffset;
             this.freq = freq;
@@ -39,8 +37,9 @@ namespace CityGen
             {
                 for (float x = 0f; x < texture.width; ++x)
                 {
-                    float xCoord = xOffset + x / texture.width * freq;
-                    float yCoord = yOffset + y / texture.height * freq;
+                    float xCoord = xOffset + x / Config.PARAMAP_GRANULARITY;// texture.width * freq;
+                    float yCoord = yOffset + y / Config.PARAMAP_GRANULARITY;// texture.height * freq;
+                    //float sample = (float)SimplexNoise.noise(xCoord, yCoord);
                     float sample = Mathf.PerlinNoise(xCoord, yCoord);
                     pixels[(int)(y * texture.width + x)] = new Color(sample, sample, sample);
                 }

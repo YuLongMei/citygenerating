@@ -2,22 +2,26 @@
 {
     public static class Config
     {
+        #region InputSimulation
+        internal static readonly float PARAMAP_GRANULARITY = 800f;
+        #endregion
+
         #region Road
-        internal static float HIGHWAY_DEFAULT_WIDTH = 8f;
-        internal static float HIGHWAY_DEFAULT_LENGTH = 20f;
-        internal static float STREET_DEFAULT_WIDTH = 4f;
-        internal static float STREET_DEFAULT_LENGTH = 10f;
-        internal static float HIGHWAY_GROWTH_MIN_DEGREE = 30f;
-        internal static float HIGHWAY_GROWTH_MAX_DEGREE = 100f;
+        internal static readonly float HIGHWAY_DEFAULT_WIDTH = 8f;
+        internal static readonly float HIGHWAY_DEFAULT_LENGTH = 50f;
+        internal static readonly float STREET_DEFAULT_WIDTH = 4f;
+        internal static readonly float STREET_DEFAULT_LENGTH = 10f;
+        internal static readonly float HIGHWAY_GROWTH_MIN_DEGREE = 5f;
+        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 130f;
         #endregion
 
         #region RoadGenerating
-        internal static int ROAD_COUNT_LIMIT = 3000;
-        internal static float DETECTIVE_RADIUS_FROM_ENDS = .5f;
+        internal static readonly int ROAD_COUNT_LIMIT = 3000;
+        internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = .2f * HIGHWAY_DEFAULT_WIDTH;
         #endregion
 
         #region Other
-        internal static float FLOAT_DELTA = .0000001f;
+        internal static readonly float FLOAT_DELTA = .0000001f;
         #endregion
     }
 }

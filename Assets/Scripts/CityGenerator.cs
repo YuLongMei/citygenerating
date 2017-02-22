@@ -2,6 +2,7 @@
 using CityGen.ParaMaps;
 using CityGen.Struct;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -49,6 +50,7 @@ namespace CityGen
             drawDebug();
         }
 
+        protected SimulatedParaMap perlin;
         public void generate(string seed)
         {
             // initalize random state by the hash code of seed
@@ -56,18 +58,17 @@ namespace CityGen
 
             // population density for global goals
             // ------------------------------TEST---------------------------------
-            var perlin = new Perlin(
+            perlin = new SimulatedParaMap(
                 paraMaps.Width,
                 paraMaps.Height,
+                null,
                 Random.Range(-99999f, 99999f),
-                Random.Range(-99999f, 99999f),
-                5f);
-            var pd = paraMaps.getMap(ParameterMapIndex.PopulationDensity);
-            pd.SetPixels(perlin.texture.GetPixels());
-            pd.Apply();
+                Random.Range(-99999f, 99999f));
             var ground = GameObject.Find("Ground");
+            ground.transform.localScale = 
+                new Vector3(paraMaps.Width * ground.transform.localScale.x, 1, paraMaps.Height * ground.transform.localScale.x);
             var renderer = ground.GetComponent<Renderer>();
-            renderer.material.mainTexture = pd;
+            renderer.material.mainTexture = perlin.Map;
             // ------------------------------TEST---------------------------------
 
             // priority queue
@@ -316,10 +317,11 @@ namespace CityGen
             out List<RoadSegment<MetaInformation>> potentialSegs)
         {
             potentialSegs = new List<RoadSegment<MetaInformation>>();
+            var pendingSegs = new List<RoadSegment<MetaInformation>>();
             float digreeDiff = Config.HIGHWAY_GROWTH_MAX_DEGREE - Config.HIGHWAY_GROWTH_MIN_DEGREE;
             Road approvedRoad = approvedSeg.road;
 
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 // get a growth digree randomly
                 float growthDigree = Random.Range(-digreeDiff, digreeDiff);
@@ -333,9 +335,18 @@ namespace CityGen
 
                 // create new road
                 var potentialRoad = new Road(approvedRoad.end, potentialRoadEnd, Config.HIGHWAY_DEFAULT_WIDTH);
-                var potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, new HighwayMetaInfo());
-                potentialSegs.Add(potentialSeg);
+                var metaInfo = new HighwayMetaInfo();
+                metaInfo.populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
+                var potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
+                pendingSegs.Add(potentialSeg);
             }
+
+            // pick out the road where has the most population density
+            var maxDensityRoad =
+                pendingSegs
+                .OrderByDescending(x => ((HighwayMetaInfo)x.metaInformation).populationDensity)
+                .Take(2);
+            potentialSegs.AddRange(maxDensityRoad);
 
             return potentialSegs.Count > 0;
         }
@@ -360,7 +371,7 @@ namespace CityGen
             while (roads.MoveNext())
             {
                 var road = roads.Current.Value;
-                Debug.DrawLine(road.start, road.end);
+                Debug.DrawLine(road.start, road.end, Color.red);
             }
         }
         #endregion

@@ -38,5 +38,21 @@ namespace CityGen.ParaMaps
             }
             return maps[(int)index];
         }
+
+        public void setMap(ParameterMapIndex index, Texture2D input)
+        {
+            while ((int)index >= maps.Count)
+            {
+                Texture2D t = new Texture2D(width, height);
+                maps.Add(t);
+            }
+            maps[(int)index].SetPixels(input.GetPixels());
+            maps[(int)index].Apply();
+        }
+
+        /*public Color getValueInMap(ParameterMapIndex index, float x, float y)
+        {
+            var map = getMap(index);
+        }*/
     }
 }

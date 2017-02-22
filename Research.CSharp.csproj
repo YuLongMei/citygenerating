@@ -96,9 +96,13 @@
     <Compile Include="Assets\Scripts\CityGenerator.cs" />
     <Compile Include="Assets\Scripts\Configuration\Config.cs" />
     <Compile Include="Assets\Scripts\MapOrganizer.cs" />
+    <Compile Include="Assets\Scripts\ParameterMaps\ExternalParaMap.cs" />
     <Compile Include="Assets\Scripts\ParameterMaps\MapsLoader.cs" />
+    <Compile Include="Assets\Scripts\ParameterMaps\ParameterMap.cs" />
     <Compile Include="Assets\Scripts\ParameterMaps\ParameterMaps.cs" />
+    <Compile Include="Assets\Scripts\ParameterMaps\SimulatedParaMap.cs" />
     <Compile Include="Assets\Scripts\Perlin.cs" />
+    <Compile Include="Assets\Scripts\SimplexNoise.cs" />
     <Compile Include="Assets\Scripts\Structures\IntersectionInfo.cs" />
     <Compile Include="Assets\Scripts\Structures\Junction.cs" />
     <Compile Include="Assets\Scripts\Structures\MetaInformation.cs" />

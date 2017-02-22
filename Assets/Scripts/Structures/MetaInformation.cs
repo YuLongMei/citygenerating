@@ -20,6 +20,8 @@ namespace CityGen.Struct
             type = "Highway";
         }
 
+        internal float populationDensity;
+
         public override bool applyTo(ref Road road)
         {
             throw new NotImplementedException();
