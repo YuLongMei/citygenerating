@@ -11,8 +11,10 @@
         internal static readonly float HIGHWAY_DEFAULT_LENGTH = 50f;
         internal static readonly float STREET_DEFAULT_WIDTH = 4f;
         internal static readonly float STREET_DEFAULT_LENGTH = 10f;
-        internal static readonly float HIGHWAY_GROWTH_MIN_DEGREE = 5f;
-        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 130f;
+        internal static readonly float HIGHWAY_GROWTH_MIN_DEGREE = 0f;
+        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 10f;
+        internal static readonly float HIGHWAY_BRANCH_MIN_DEGREE = 75f;
+        internal static readonly float HIGHWAY_BRANCH_MAX_DEGREE = 105f;
         #endregion
 
         #region RoadGenerating

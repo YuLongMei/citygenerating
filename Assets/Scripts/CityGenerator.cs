@@ -76,14 +76,23 @@ namespace CityGen
 
             // first road segment
             Vector2 centre = (maxMapPostion + minMapPostion) * .5f;
+            var centre3 = new Vector3(centre.x, 0, centre.y);
             Road rootRoad = new Road(
-                new Vector3(centre.x, 0, centre.y), 
+                centre3, 
                 new Vector3(centre.x + Config.HIGHWAY_DEFAULT_LENGTH, 0, centre.y), 
                 Config.HIGHWAY_DEFAULT_LENGTH);
             MetaInformation meta = new HighwayMetaInfo();
             var rootSegment = new RoadSegment<MetaInformation>(0, rootRoad, meta);
             map.insertRoad(rootRoad);
-            
+            priQueue.Add(rootSegment);
+
+            rootRoad = new Road(
+                centre3,
+                new Vector3(centre.x - Config.HIGHWAY_DEFAULT_LENGTH, 0, centre.y),
+                Config.HIGHWAY_DEFAULT_LENGTH);
+            meta = new HighwayMetaInfo();
+            rootSegment = new RoadSegment<MetaInformation>(0, rootRoad, meta);
+            map.insertRoad(rootRoad);
             priQueue.Add(rootSegment);
 
             // loop until priority queue to empty
@@ -317,16 +326,25 @@ namespace CityGen
             out List<RoadSegment<MetaInformation>> potentialSegs)
         {
             potentialSegs = new List<RoadSegment<MetaInformation>>();
-            var pendingSegs = new List<RoadSegment<MetaInformation>>();
-            float digreeDiff = Config.HIGHWAY_GROWTH_MAX_DEGREE - Config.HIGHWAY_GROWTH_MIN_DEGREE;
+            // growth segment will grow along last segment.
+            var pendingGrowthSegs = new List<RoadSegment<MetaInformation>>();
+            float growthDigreeDiff = Config.HIGHWAY_GROWTH_MAX_DEGREE - Config.HIGHWAY_GROWTH_MIN_DEGREE;
+            // branch segment will make a branch from the end.
+            var pendingBranchSegs = new List<RoadSegment<MetaInformation>>();
+            float branchDigreeDiff = Config.HIGHWAY_BRANCH_MAX_DEGREE - Config.HIGHWAY_BRANCH_MIN_DEGREE;
             Road approvedRoad = approvedSeg.road;
 
             for (int i = 0; i < 4; ++i)
             {
                 // get a growth digree randomly
-                float growthDigree = Random.Range(-digreeDiff, digreeDiff);
+                float growthDigree = Random.Range(-growthDigreeDiff, growthDigreeDiff);
                 growthDigree += (growthDigree > 0) ? 
                     Config.HIGHWAY_GROWTH_MIN_DEGREE : -Config.HIGHWAY_GROWTH_MIN_DEGREE;
+
+                // get a branch digree randomly
+                float branchDigree = Random.Range(-branchDigreeDiff, branchDigreeDiff);
+                branchDigree += (branchDigree > 0) ?
+                    Config.HIGHWAY_BRANCH_MIN_DEGREE : -Config.HIGHWAY_BRANCH_MIN_DEGREE;
 
                 // figure out the end point of new road
                 var rotation = Quaternion.Euler(0, growthDigree, 0);
@@ -338,15 +356,47 @@ namespace CityGen
                 var metaInfo = new HighwayMetaInfo();
                 metaInfo.populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
                 var potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
-                pendingSegs.Add(potentialSeg);
+                pendingGrowthSegs.Add(potentialSeg);
+
+                // figure out the end point of new branch road
+                rotation = Quaternion.Euler(0, branchDigree, 0);
+                potentialRoadEnd = approvedRoad.end +
+                    rotation * approvedRoad.Direction.normalized * Config.HIGHWAY_DEFAULT_LENGTH;
+
+                // create new branch road
+                potentialRoad = new Road(approvedRoad.end, potentialRoadEnd, Config.HIGHWAY_DEFAULT_WIDTH);
+                metaInfo = new HighwayMetaInfo();
+                metaInfo.populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
+                potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
+                pendingBranchSegs.Add(potentialSeg);
             }
 
             // pick out the road where has the most population density
-            var maxDensityRoad =
-                pendingSegs
+            var maxDensityGrowthRoad =
+                pendingGrowthSegs
                 .OrderByDescending(x => ((HighwayMetaInfo)x.metaInformation).populationDensity)
-                .Take(2);
-            potentialSegs.AddRange(maxDensityRoad);
+                .FirstOrDefault();
+            var maxDensityBranchRoad =
+                pendingBranchSegs
+                .OrderByDescending(x => ((HighwayMetaInfo)x.metaInformation).populationDensity)
+                .Take(1);
+
+            // as for growth road, add it to result directly
+            potentialSegs.Add(maxDensityGrowthRoad);
+
+            // as for branch road, add if it has higher population density
+            var growthRoadDensity = ((HighwayMetaInfo)maxDensityGrowthRoad.metaInformation).populationDensity;
+            foreach (var road in maxDensityBranchRoad)
+            {
+                if (((HighwayMetaInfo)road.metaInformation).populationDensity > growthRoadDensity)
+                {
+                    potentialSegs.Add(road);
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             return potentialSegs.Count > 0;
         }
