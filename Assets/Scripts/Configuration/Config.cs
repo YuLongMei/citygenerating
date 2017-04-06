@@ -8,18 +8,19 @@
 
         #region Road
         internal static readonly float HIGHWAY_DEFAULT_WIDTH = 8f;
-        internal static readonly float HIGHWAY_DEFAULT_LENGTH = 50f;
+        internal static readonly float HIGHWAY_DEFAULT_LENGTH = 20f;
         internal static readonly float STREET_DEFAULT_WIDTH = 4f;
         internal static readonly float STREET_DEFAULT_LENGTH = 10f;
         internal static readonly float HIGHWAY_GROWTH_MIN_DEGREE = 0f;
-        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 10f;
+        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 2f;
         internal static readonly float HIGHWAY_BRANCH_MIN_DEGREE = 75f;
         internal static readonly float HIGHWAY_BRANCH_MAX_DEGREE = 105f;
+        internal static readonly float HIGHWAY_SEGMENT_MAX_LENGTH = 150f;
         #endregion
 
         #region RoadGenerating
         internal static readonly int ROAD_COUNT_LIMIT = 3000;
-        internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = .2f * HIGHWAY_DEFAULT_WIDTH;
+        internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = 1.5f * HIGHWAY_DEFAULT_WIDTH;
         #endregion
 
         #region Other

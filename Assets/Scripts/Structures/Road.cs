@@ -22,6 +22,10 @@ namespace CityGen.Struct
         {
             initialize(start, end, width);
         }
+        public Road(Road road)
+        {
+            initialize(road);
+        }
 
         public Vector3 Direction
         {
@@ -40,6 +44,11 @@ namespace CityGen.Struct
 
             direction = end - start;
             length = direction.magnitude;
+        }
+
+        public void initialize(Road road)
+        {
+            initialize(road.start, road.end, road.width);
         }
 
         public void setStart(Vector3 start)

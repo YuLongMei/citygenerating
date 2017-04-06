@@ -20,9 +20,7 @@ namespace CityGen
 
         // local constraints as delegate
         delegate bool LocalConstraint(
-            RoadSegment<MetaInformation> originalSeg, 
-            out RoadSegment<MetaInformation> modifiedSeg,
-            out bool canGrow);
+            ref RoadSegment<MetaInformation> seg);
         private LocalConstraint localConstraints = null;
 
         // global goals as delegate
@@ -103,24 +101,22 @@ namespace CityGen
                 RoadSegment<MetaInformation> minSeg = priQueue.DeleteMin();
 
                 // check that it is valid, skip to the next segment if it is not
-                RoadSegment<MetaInformation> modifiedSeg = null;
-                bool canGrow = false;
                 if (localConstraints != null)
                 {
-                    if(!localConstraints(minSeg, out modifiedSeg, out canGrow))
+                    if(!localConstraints(ref minSeg))
                     {
                         continue;
                     }
                 }
 
                 // It's valid, so add it to list. It is now part of the final result
-                map.insertRoad(modifiedSeg.road);
+                map.insertRoad(minSeg.getLastRoad());
 
                 // produce potential segments leading off this road according to some global goal
                 List<RoadSegment<MetaInformation>> pendingSegs = null;
-                if (globalGoals != null && canGrow)
+                if (globalGoals != null && minSeg.canGrow)
                 {
-                    globalGoals(modifiedSeg, out pendingSegs);
+                    globalGoals(minSeg, out pendingSegs);
 
                     foreach (RoadSegment<MetaInformation> seg in pendingSegs)
                     {
@@ -135,77 +131,71 @@ namespace CityGen
         /// <summary>
         /// General local constraint
         /// </summary>
-        /// <param name="originalSeg"></param>
-        /// <param name="modifiedSeg"></param>
+        /// <param name="seg"></param>
         /// <returns>if this road can be accepted</returns>
         protected bool generalLocalConstraint(
-            RoadSegment<MetaInformation> originalSeg,
-            out RoadSegment<MetaInformation> modifiedSeg,
-            out bool canGrow)
+            ref RoadSegment<MetaInformation> seg)
         {
             // out of bounds
-            if (!withinRange(originalSeg.road))
+            if (!withinRange(seg.getLastRoad()))
             {
-                modifiedSeg = null;
-                canGrow = false;
+                seg.canGrow = false;
                 return false;
             }
 
             // 1. If a candidate segment crosses another segment 
             // then join the roads together to form a T-Junction.
             bool originalIntersectWithAnotherRoad = 
-                makeTJunction(originalSeg, out modifiedSeg);
+                makeTJunction(ref seg);
 
             if (originalIntersectWithAnotherRoad)
             {
-                canGrow = false;
+                seg.canGrow = false;
                 return true;
             }
 
             // 2. If a candidate segment stops near an existing T-Junction 
             // then extend it to join the junction and form a cross-junction.
             bool originalCloseToACrossing =
-                makeCrossJunction(originalSeg, out modifiedSeg);
+                makeCrossJunction(ref seg);
 
             if (originalCloseToACrossing)
             {
-                canGrow = false;
+                seg.canGrow = false;
                 return true;
             }
 
             // 3. If a candidate segment stops near to another segment
             // then extend it to join the roads and form a T-Junction.
             var extendedSeg =
-                new RoadSegment<MetaInformation>(originalSeg);
-            extendedSeg.road.stretch(Config.DETECTIVE_RADIUS_FROM_ENDS);
+                new RoadSegment<MetaInformation>(seg);
+            extendedSeg.getLastRoad().stretch(Config.DETECTIVE_RADIUS_FROM_ENDS);
             // out of bounds
-            if (!withinRange(extendedSeg.road.end))
+            if (!withinRange(extendedSeg.getEnd()))
             {
-                modifiedSeg = null;
-                canGrow = false;
+                seg.canGrow = false;
                 return false;
             }
 
             bool originalCloseToARoad =
-                makeTJunction(extendedSeg, out modifiedSeg);
+                makeTJunction(ref extendedSeg);
 
-            if (originalCloseToACrossing)
+            if (originalCloseToARoad)
             {
-                canGrow = false;
+                seg = extendedSeg;
+                seg.canGrow = false;
                 return true;
             }
 
             // 4. Accept this segment without any changes.
-            modifiedSeg = originalSeg;
-            canGrow = true;
+            seg.canGrow = true;
             return true;
         }
 
         protected bool makeTJunction(
-            RoadSegment<MetaInformation> originalSeg,
-            out RoadSegment<MetaInformation> modifiedSeg)
+            ref RoadSegment<MetaInformation> seg)
         {
-            Road originalRoad = originalSeg.road;
+            Road originalRoad = seg.getLastRoad();
 
             // retrieve all generated roads whose bounds are overlapped
             // with this road's bound.
@@ -226,9 +216,9 @@ namespace CityGen
                     {
                         Road proposedRoad = new Road(originalRoad.start, intersection.Value, originalRoad.width);
                         float distance = proposedRoad.Length;
-                        var seg = new IntersectionInfo(
+                        var info = new IntersectionInfo(
                             distance, intersection.Value, proposedRoad, road);
-                        priQueue.Add(seg);
+                        priQueue.Add(info);
                     }
                 }
             }
@@ -236,7 +226,6 @@ namespace CityGen
             // there's no intersection
             if (priQueue.IsEmpty)
             {
-                modifiedSeg = originalSeg;
                 return false;
             }
 
@@ -253,31 +242,23 @@ namespace CityGen
             map.deleteRoad(nearestSeg.intersectedRoad);
 
             // return
-            modifiedSeg = new RoadSegment<MetaInformation>(
-                originalSeg.timeDelay,
-                nearestSeg.proposedRoad,
-                originalSeg.metaInformation);
+            seg.updateLastRoad(nearestSeg.proposedRoad);
             return true;
         }
 
         protected bool makeCrossJunction(
-            RoadSegment<MetaInformation> originalSeg,
-            out RoadSegment<MetaInformation> modifiedSeg)
+            ref RoadSegment<MetaInformation> seg)
         {
-            Road originalRoad = originalSeg.road;
+            Road originalRoad = seg.getLastRoad();
             Junction closest = 
                 findClosestJunction(originalRoad.end, Config.DETECTIVE_RADIUS_FROM_ENDS);
 
             if (closest == null)
             {
-                modifiedSeg = originalSeg;
                 return false;
             }
 
-            modifiedSeg = new RoadSegment<MetaInformation>(
-                originalSeg.timeDelay,
-                new Road(originalRoad.start, closest.position, originalRoad.width),
-                originalSeg.metaInformation);
+            seg.updateLastRoad(new Road(originalRoad.start, closest.position, originalRoad.width));
             return true;
         }
 
@@ -325,14 +306,29 @@ namespace CityGen
             RoadSegment<MetaInformation> approvedSeg,
             out List<RoadSegment<MetaInformation>> potentialSegs)
         {
+            // Vaialble declarations
             potentialSegs = new List<RoadSegment<MetaInformation>>();
+            bool branchAppeared = false;
+            var pendingBranchSegs = new List<RoadSegment<MetaInformation>>();
+            float branchDigreeDiff = 0f;
+
+            // If segment grows beyond the fixed length,
+            // several branches will appear.
+            if (approvedSeg.TotalLength >= Config.HIGHWAY_SEGMENT_MAX_LENGTH)
+            {
+                branchAppeared = true;
+            }
+
             // growth segment will grow along last segment.
             var pendingGrowthSegs = new List<RoadSegment<MetaInformation>>();
             float growthDigreeDiff = Config.HIGHWAY_GROWTH_MAX_DEGREE - Config.HIGHWAY_GROWTH_MIN_DEGREE;
             // branch segment will make a branch from the end.
-            var pendingBranchSegs = new List<RoadSegment<MetaInformation>>();
-            float branchDigreeDiff = Config.HIGHWAY_BRANCH_MAX_DEGREE - Config.HIGHWAY_BRANCH_MIN_DEGREE;
-            Road approvedRoad = approvedSeg.road;
+            if (branchAppeared)
+            {
+                branchDigreeDiff = Config.HIGHWAY_BRANCH_MAX_DEGREE - Config.HIGHWAY_BRANCH_MIN_DEGREE;
+            }
+            
+            Road approvedRoad = approvedSeg.getLastRoad();
 
             for (int i = 0; i < 4; ++i)
             {
@@ -340,11 +336,6 @@ namespace CityGen
                 float growthDigree = Random.Range(-growthDigreeDiff, growthDigreeDiff);
                 growthDigree += (growthDigree > 0) ? 
                     Config.HIGHWAY_GROWTH_MIN_DEGREE : -Config.HIGHWAY_GROWTH_MIN_DEGREE;
-
-                // get a branch digree randomly
-                float branchDigree = Random.Range(-branchDigreeDiff, branchDigreeDiff);
-                branchDigree += (branchDigree > 0) ?
-                    Config.HIGHWAY_BRANCH_MIN_DEGREE : -Config.HIGHWAY_BRANCH_MIN_DEGREE;
 
                 // figure out the end point of new road
                 var rotation = Quaternion.Euler(0, growthDigree, 0);
@@ -358,17 +349,25 @@ namespace CityGen
                 var potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
                 pendingGrowthSegs.Add(potentialSeg);
 
-                // figure out the end point of new branch road
-                rotation = Quaternion.Euler(0, branchDigree, 0);
-                potentialRoadEnd = approvedRoad.end +
-                    rotation * approvedRoad.Direction.normalized * Config.HIGHWAY_DEFAULT_LENGTH;
+                if (branchAppeared)
+                {
+                    // get a branch digree randomly
+                    float branchDigree = Random.Range(-branchDigreeDiff, branchDigreeDiff);
+                    branchDigree += (branchDigree > 0) ?
+                        Config.HIGHWAY_BRANCH_MIN_DEGREE : -Config.HIGHWAY_BRANCH_MIN_DEGREE;
 
-                // create new branch road
-                potentialRoad = new Road(approvedRoad.end, potentialRoadEnd, Config.HIGHWAY_DEFAULT_WIDTH);
-                metaInfo = new HighwayMetaInfo();
-                metaInfo.populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
-                potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
-                pendingBranchSegs.Add(potentialSeg);
+                    // figure out the end point of new branch road
+                    rotation = Quaternion.Euler(0, branchDigree, 0);
+                    potentialRoadEnd = approvedRoad.end +
+                        rotation * approvedRoad.Direction.normalized * Config.HIGHWAY_DEFAULT_LENGTH;
+
+                    // create new branch road
+                    potentialRoad = new Road(approvedRoad.end, potentialRoadEnd, Config.HIGHWAY_DEFAULT_WIDTH);
+                    metaInfo = new HighwayMetaInfo();
+                    metaInfo.populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
+                    potentialSeg = new RoadSegment<MetaInformation>(0, potentialRoad, metaInfo);
+                    pendingBranchSegs.Add(potentialSeg);
+                }
             }
 
             // pick out the road where has the most population density
@@ -376,26 +375,38 @@ namespace CityGen
                 pendingGrowthSegs
                 .OrderByDescending(x => ((HighwayMetaInfo)x.metaInformation).populationDensity)
                 .FirstOrDefault();
-            var maxDensityBranchRoad =
+
+            if (branchAppeared)
+            {
+                var maxDensityBranchRoad =
                 pendingBranchSegs
                 .OrderByDescending(x => ((HighwayMetaInfo)x.metaInformation).populationDensity)
                 .Take(1);
 
-            // as for growth road, add it to result directly
-            potentialSegs.Add(maxDensityGrowthRoad);
+                // as for growth road, add it to result directly
+                potentialSegs.Add(maxDensityGrowthRoad);
 
-            // as for branch road, add if it has higher population density
-            var growthRoadDensity = ((HighwayMetaInfo)maxDensityGrowthRoad.metaInformation).populationDensity;
-            foreach (var road in maxDensityBranchRoad)
+                // as for branch road, add if it has higher population density
+                var growthRoadDensity = ((HighwayMetaInfo)maxDensityGrowthRoad.metaInformation).populationDensity;
+                foreach (var road in maxDensityBranchRoad)
+                {
+                    if (((HighwayMetaInfo)road.metaInformation).populationDensity > growthRoadDensity)
+                    {
+                        potentialSegs.Add(road);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else
             {
-                if (((HighwayMetaInfo)road.metaInformation).populationDensity > growthRoadDensity)
-                {
-                    potentialSegs.Add(road);
-                }
-                else
-                {
-                    break;
-                }
+                // segment grows
+                approvedSeg.grow(maxDensityGrowthRoad.getLastRoad());
+                approvedSeg.metaInformation = maxDensityGrowthRoad.metaInformation;
+
+                potentialSegs.Add(approvedSeg);
             }
 
             return potentialSegs.Count > 0;
