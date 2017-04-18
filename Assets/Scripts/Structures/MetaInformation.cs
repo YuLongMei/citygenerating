@@ -10,6 +10,8 @@ namespace CityGen.Struct
             get { return type; }
         }
 
+        internal float populationDensity;
+
         public abstract bool applyTo(ref Road road);
     }
 
@@ -20,7 +22,18 @@ namespace CityGen.Struct
             type = "Highway";
         }
 
-        internal float populationDensity;
+        public override bool applyTo(ref Road road)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class StreetMetaInfo : MetaInformation
+    {
+        public StreetMetaInfo()
+        {
+            type = "Street";
+        }
 
         public override bool applyTo(ref Road road)
         {

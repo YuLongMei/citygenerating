@@ -23,6 +23,9 @@ namespace CityGen.ParaMaps
                     map = new Texture2D(width, height);
                     var pixels = new Color[width * height];
 
+                    float difference = Config.MAX_POPULATION_DENSITY_VALUE - Config.MIN_POPULATION_DENSITY_VALUE;
+                    float addend = Config.MIN_POPULATION_DENSITY_VALUE / difference;
+
                     for (float y = 0f; y < height; ++y)
                     {
                         for (float x = 0f; x < width; ++x)
@@ -30,7 +33,7 @@ namespace CityGen.ParaMaps
                             float xCoord = xOffset + x / Config.PARAMAP_GRANULARITY;
                             float yCoord = yOffset + y / Config.PARAMAP_GRANULARITY;
                             //float sample = (float)SimplexNoise.noise(xCoord, yCoord);
-                            float sample = (Mathf.PerlinNoise(xCoord, yCoord) + 1f) * .5f;
+                            float sample = (Mathf.PerlinNoise(xCoord, yCoord) + addend) * difference;
                             pixels[(int)(y * width + x)] = new Color(sample, sample, sample);
                         }
                     }
@@ -45,9 +48,11 @@ namespace CityGen.ParaMaps
         public override float getValue(float x, float y)
         {
             Vector2 coord = transformCoordinate(x, y);
+            float difference = Config.MAX_POPULATION_DENSITY_VALUE - Config.MIN_POPULATION_DENSITY_VALUE;
+            float addend = Config.MIN_POPULATION_DENSITY_VALUE / difference;
             float xCoord = xOffset + coord.x / Config.PARAMAP_GRANULARITY;
             float yCoord = yOffset + coord.y / Config.PARAMAP_GRANULARITY;
-            return (Mathf.PerlinNoise(xCoord, yCoord) + 1f) * .5f;
+            return (Mathf.PerlinNoise(xCoord, yCoord) + addend) * difference;
         }
     }
 }
