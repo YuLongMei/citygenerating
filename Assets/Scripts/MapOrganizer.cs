@@ -1,5 +1,6 @@
 ﻿using CityGen.Struct;
 using CityGen.Util;
+using System.Linq;
 using UnityEngine;
 
 namespace CityGen
@@ -50,7 +51,7 @@ namespace CityGen
         internal void insertJunction(Junction junction, Road road)
         {
             var foundJunction = junctions.Intersects(junction.Bound);
-            if (foundJunction != null)
+            if (foundJunction.Any())
             {
                 foreach (var j in foundJunction)
                 {
@@ -67,7 +68,7 @@ namespace CityGen
         internal void updateJunction(Junction junction, Road road)
         {
             var foundJunction = junctions.Intersects(junction.Bound);
-            if (foundJunction != null)
+            if (foundJunction.Any())
             {
                 foreach (var j in foundJunction)
                 {

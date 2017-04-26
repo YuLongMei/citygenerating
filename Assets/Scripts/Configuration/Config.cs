@@ -12,16 +12,17 @@
         internal static readonly float HIGHWAY_DEFAULT_WIDTH = 8f;
         internal static readonly float HIGHWAY_DEFAULT_LENGTH = 40f;
         internal static readonly float STREET_DEFAULT_WIDTH = 4f;
-        internal static readonly float STREET_DEFAULT_LENGTH = 20f;
+        internal static readonly float STREET_DEFAULT_LENGTH = 15f;
         #endregion
 
         #region RoadGenerating
-        internal static readonly int ROAD_COUNT_LIMIT = 30000;
-        internal static readonly int STREET_TIME_DELAY = 9000;
-        internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = 10f;
-        internal static readonly float CLOSEST_DISTANCE_BETWEEN_TWO_JUNCTIONS = 1f * STREET_DEFAULT_LENGTH;
+        internal static readonly int ROAD_COUNT_PER_FRAME = 50;
+        internal static readonly int ROAD_COUNT_LIMIT = 100000;
+        internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = .5f * STREET_DEFAULT_LENGTH;
+        internal static readonly float SHORTEST_ROAD_LENGTH = .9f * STREET_DEFAULT_LENGTH;
+        internal static readonly float SMALLEST_DEGREE_BETWEEN_TWO_ROADS = 30f;
         internal static readonly float HIGHWAY_GROWTH_MIN_DEGREE = 0f;
-        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 2f;
+        internal static readonly float HIGHWAY_GROWTH_MAX_DEGREE = 1.2f;
         internal static readonly float HIGHWAY_BRANCH_MIN_DEGREE = 80f;
         internal static readonly float HIGHWAY_BRANCH_MAX_DEGREE = 100f;
         internal static readonly float HIGHWAY_SEGMENT_MAX_LENGTH = 600f;

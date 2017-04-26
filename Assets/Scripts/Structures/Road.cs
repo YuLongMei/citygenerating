@@ -73,8 +73,20 @@ namespace CityGen.Struct
 
         public Road stretch(float stretchLength)
         {
-            initialize(start, end + direction.normalized * stretchLength, width);
-            return this;
+            return new Road(start, end + direction.normalized * stretchLength, width);
+        }
+
+        /// <summary>
+        /// Return the angle between 2 roads.
+        /// These 2 roads must connect to each other.
+        /// </summary>
+        /// <param name="road">another road</param>
+        /// <returns>the angle</returns>
+        public float getAngleWith(Road road)
+        {
+            var roadDirection =
+                (road.end == end) ? road.Direction : -road.Direction;
+            return Vector3.Angle(direction, roadDirection);
         }
 
         public List<Road> split(Vector3 splitPoint)

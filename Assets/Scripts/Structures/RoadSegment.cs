@@ -12,8 +12,9 @@ namespace CityGen.Struct
         internal T metaInformation;
 
         // flags
-        internal bool canGrow = true;
-        internal bool succeed = false;
+        internal bool growthBlocked = false;
+        internal bool successionBlocked = false;
+        internal bool discarded = false;
 
         protected float totalLength = 0f;
 
@@ -32,8 +33,9 @@ namespace CityGen.Struct
             totalLength = seg.TotalLength;
             metaInformation = seg.metaInformation;
 
-            canGrow = seg.canGrow;
-            succeed = seg.succeed;
+            growthBlocked = seg.growthBlocked;
+            successionBlocked = seg.successionBlocked;
+            discarded = seg.discarded;
         }
 
         public float TotalLength
