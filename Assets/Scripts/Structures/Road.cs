@@ -6,19 +6,22 @@ namespace CityGen.Struct
 {
     public class Road
     {
-        internal Vector3 start;
-        internal Vector3 end;
+        internal Junction start;
+        internal Junction end;
 
         internal float width;
 
         private float length;
         private Vector3 direction;
-        
+
+        // flag
+        internal bool isBeManaged = false;
+
         public Road()
         {
             initialize(Vector3.zero, Vector3.zero, 0f);
         }
-        public Road(Vector3 start, Vector3 end, float width)
+        public Road(Junction start, Junction end, float width)
         {
             initialize(start, end, width);
         }
@@ -36,13 +39,13 @@ namespace CityGen.Struct
             get { return length; }
         }
 
-        public void initialize(Vector3 start, Vector3 end, float width)
+        public void initialize(Junction start, Junction end, float width)
         {
             this.start = start;
             this.end = end;
             this.width = width;
 
-            direction = end - start;
+            direction = end.position - start.position;
             length = direction.magnitude;
         }
 
@@ -51,29 +54,9 @@ namespace CityGen.Struct
             initialize(road.start, road.end, road.width);
         }
 
-        public void setStart(Vector3 start)
-        {
-            initialize(start, end, width);
-        }
-        public void setEnd(Vector3 end)
-        {
-            initialize(start, end, width);
-        }
-        public Road Clone()
-        {
-            return new Road(start, end, width);
-        }
-
-        public Road translate(Vector3 vector)
-        {
-            start += vector;
-            end += vector;
-            return this;
-        }
-
         public Road stretch(float stretchLength)
         {
-            return new Road(start, end + direction.normalized * stretchLength, width);
+            return new Road(start, end.position + direction.normalized * stretchLength, width);
         }
 
         /// <summary>
@@ -85,11 +68,11 @@ namespace CityGen.Struct
         public float getAngleWith(Road road)
         {
             var roadDirection =
-                (road.end == end) ? road.Direction : -road.Direction;
+                (road.end == end || road.start == start) ? road.Direction : -road.Direction;
             return Vector3.Angle(direction, roadDirection);
         }
 
-        public List<Road> split(Vector3 splitPoint)
+        public List<Road> split(Junction splitPoint)
         {
             var roads = new List<Road>();
             Road road1 = new Road(start, splitPoint, width);
@@ -103,14 +86,14 @@ namespace CityGen.Struct
         {
             if (omitVertices)
             {
-                if (this.start == other.start || this.start == other.end ||
-                    this.end == other.start || this.end == other.end)
+                if (start == other.start || start == other.end ||
+                    end == other.start || end == other.end)
                 {
                     intersection = null;
                     return false;
                 }
             }
-            return Math.doIntersect(this.start, this.end, other.start, other.end, out intersection);
+            return Math.doIntersect(start.position, end.position, other.start.position, other.end.position, out intersection);
         }
 
         public Rect Bound
@@ -118,10 +101,10 @@ namespace CityGen.Struct
             get
             {
                 return new Rect(
-                    Mathf.Min(start.x, end.x),
-                    Mathf.Min(start.z, end.z),
-                    Mathf.Abs(start.x - end.x),
-                    Mathf.Abs(start.z - end.z));
+                    Mathf.Min(start.position.x, end.position.x),
+                    Mathf.Min(start.position.z, end.position.z),
+                    Mathf.Abs(start.position.x - end.position.x),
+                    Mathf.Abs(start.position.z - end.position.z));
             }
         }
 
@@ -130,6 +113,11 @@ namespace CityGen.Struct
             return start == (obj as Road).start
                 && end == (obj as Road).end
                 && width == (obj as Road).width;
+        }
+
+        public override int GetHashCode()
+        {
+            return start.GetHashCode() ^ end.GetHashCode() ^ width.GetHashCode();
         }
     }
 }

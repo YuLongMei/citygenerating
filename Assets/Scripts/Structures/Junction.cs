@@ -7,7 +7,10 @@ namespace CityGen.Struct
     {
         internal Vector3 position;
 
-        private List<Road> connectedRoads = new List<Road>();
+        private HashSet<Road> connectedRoads = new HashSet<Road>();
+
+        // flag
+        internal bool isBeManaged = false;
 
         public Junction(Vector3 position)
         {
@@ -24,6 +27,17 @@ namespace CityGen.Struct
             return new Junction(position);
         }
 
+        public Junction(Junction junction)
+        {
+            position = junction.position;
+
+            var enumerator = junction.Roads.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                connectedRoads.Add(enumerator.Current);
+            }
+        }
+
         public IEnumerable<Road> Roads
         {
             get { return connectedRoads; }
@@ -36,6 +50,10 @@ namespace CityGen.Struct
 
         public void add(Road road)
         {
+            if (road.Length == 0f)
+            {
+                return;
+            }
             connectedRoads.Add(road);
         }
 
@@ -56,6 +74,11 @@ namespace CityGen.Struct
         public override bool Equals(object obj)
         {
             return position == ((Junction)obj).position;
+        }
+
+        public override int GetHashCode()
+        {
+            return position.GetHashCode();
         }
     }
 }

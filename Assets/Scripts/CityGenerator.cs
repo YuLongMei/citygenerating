@@ -85,7 +85,6 @@ namespace CityGen
                 Config.HIGHWAY_DEFAULT_WIDTH);
             MetaInformation meta = new HighwayMetaInfo();
             var rootSegment = new RoadSegment<MetaInformation>(0, rootRoad, meta);
-            map.insertRoad(rootRoad);
             priQueue.Add(rootSegment);
 
             rootRoad = new Road(
@@ -94,7 +93,6 @@ namespace CityGen
                 Config.HIGHWAY_DEFAULT_WIDTH);
             meta = new HighwayMetaInfo();
             rootSegment = new RoadSegment<MetaInformation>(0, rootRoad, meta);
-            map.insertRoad(rootRoad);
             priQueue.Add(rootSegment);
 
             // loop until priority queue to empty
@@ -183,6 +181,15 @@ namespace CityGen
                 return true;
             }
 
+            // 0.3 
+            if (seg.getEnd().RoadsCount > 1)
+            {
+                seg.growthBlocked = true;
+                seg.successionBlocked = false;
+                seg.discarded = false;
+                return true;
+            }
+
             // 1. If a candidate segment crosses another segment 
             // then join the roads together to form a T-Junction.
             bool originalIntersectWithAnotherRoad =
@@ -244,38 +251,40 @@ namespace CityGen
             var pendingRoads =
                 map.Roads.Intersects(originalRoad.Bound);
 
-            // priority queue
-            var priQueue = new IntervalHeap<IntersectionInfo>();
-
             // to find the nearest intersection
-            foreach (Road road in pendingRoads)
-            {
-                Vector3? intersection;
-                // checking if intersected
-                if (road.isIntersectingWith(originalRoad, out intersection))
+            Vector3? intersection;
+            var nearestSeg = pendingRoads
+                .Select(road =>
                 {
-                    if (intersection.HasValue)
+                    if (road.isIntersectingWith(originalRoad, out intersection)
+                    && intersection.HasValue)
                     {
                         Road proposedRoad = new Road(originalRoad.start, intersection.Value, originalRoad.width);
                         float distance = proposedRoad.Length;
-                        var info = new IntersectionInfo(
+                        return new IntersectionInfo(
                             distance, intersection.Value, proposedRoad, road);
-                        priQueue.Add(info);
                     }
-                }
-            }
+                    return null;
+                })
+                .Min();
 
             // there's no intersection
-            if (priQueue.IsEmpty)
+            if (nearestSeg == null)
             {
                 return false;
             }
 
-            // get the nearest intersected road
-            var nearestSeg = priQueue.DeleteMin();
+            // Distance equals to zero which means 
+            // there's another road has connected with the end.
+            if (nearestSeg.distance == 0f)
+            {
+                seg.tooShortJudgment = false;
+                seg.deleteLastRoad();
+                return true;
+            }
 
             // restructuring the roads
-            List<Road> newRoads = nearestSeg.intersectedRoad.split(nearestSeg.intersection);
+            List<Road> newRoads = nearestSeg.intersectedRoad.split(nearestSeg.proposedRoad.end);
             newRoads.Add(nearestSeg.proposedRoad);
             foreach (Road road in newRoads)
             {
@@ -348,40 +357,44 @@ namespace CityGen
         private bool isDiscarded(RoadSegment<MetaInformation> seg)
         {
             var lastRoad = seg.getLastRoad();
-            var makingShortJudgment = true;
-            var discarded = false;
+            var firstRoad = seg.getFirstRoad();
 
-            // Get the end junction of road segment in map.
-            var endJunction =
-                map.Junctions.Intersects(
-                    new Junction(lastRoad.end).Bound)
-                    .FirstOrDefault();
+            // Get the junctions of road segment in map.
+            var startJunction = seg.getStart();
+            var endJunction = seg.getEnd();
+
+            if (startJunction != null && seg.tooShortJudgment)
+            {
+                var angles =
+                    startJunction.Roads
+                    .Where(road => !road.Equals(firstRoad))
+                    .Select(road => road.getAngleWith(firstRoad));
+
+                // Road grows from another segment.
+                if (angles.Any(angle =>
+                    angle >= 180 - Config.SMALLEST_DEGREE_BETWEEN_TWO_ROADS))
+                {
+                    seg.tooShortJudgment = false;
+                }
+            }
 
             if (endJunction != null)
             {
-                Debug.Log("in");
                 // Get every angle among the connected roads.
                 var angles =
                     endJunction.Roads
+                    .Where(road => !road.Equals(lastRoad))
                     .Select(road => lastRoad.getAngleWith(road));
-
-                // Road grows from another segment.
-                if (angles.Any(angle => 
-                    (seg.metaInformation.Type.Equals("Highway") && angle >= 180 - Config.HIGHWAY_GROWTH_MAX_DEGREE) || 
-                    (seg.metaInformation.Type.Equals("Street") && angle >= 180 - Config.STREET_GROWTH_MAX_DEGREE)))
-                {
-                    makingShortJudgment = false;
-                }
 
                 // The angle between two certain roads is too small.
                 if (angles.Any(angle => angle < Config.SMALLEST_DEGREE_BETWEEN_TWO_ROADS))
                 {
-                    discarded = true;
+                    seg.discarded = true;
                 }
             }
 
-            return makingShortJudgment ? 
-                seg.TotalLength <= Config.SHORTEST_ROAD_LENGTH : discarded;
+            return seg.tooShortJudgment ? 
+                seg.TotalLength <= Config.SHORTEST_ROAD_LENGTH : seg.discarded;
         }
         #endregion
 
@@ -444,7 +457,7 @@ namespace CityGen
 
                 // figure out the end point of new road
                 var rotation = Quaternion.Euler(0, growthDigree, 0);
-                var potentialRoadEnd = approvedRoad.end +
+                var potentialRoadEnd = approvedRoad.end.position +
                     rotation * approvedRoad.Direction.normalized * Config.HIGHWAY_DEFAULT_LENGTH;
 
                 // create new road
@@ -463,7 +476,7 @@ namespace CityGen
 
                     // figure out the end point of new branch road
                     rotation = Quaternion.Euler(0, branchDigree, 0);
-                    potentialRoadEnd = approvedRoad.end +
+                    potentialRoadEnd = approvedRoad.end.position +
                         rotation * approvedRoad.Direction.normalized * Config.HIGHWAY_DEFAULT_LENGTH;
 
                     // create new branch road
@@ -482,7 +495,7 @@ namespace CityGen
 
                     // figure out the end point of new branch road
                     rotation = Quaternion.Euler(0, branchDigree, 0);
-                    potentialRoadEnd = approvedRoad.end +
+                    potentialRoadEnd = approvedRoad.end.position +
                         rotation * approvedRoad.Direction.normalized * Config.STREET_DEFAULT_LENGTH;
 
                     // create new branch road
@@ -584,7 +597,7 @@ namespace CityGen
 
                 // figure out the end point of new road
                 var rotation = Quaternion.Euler(0, growthDigree, 0);
-                var potentialRoadEnd = approvedRoad.end +
+                var potentialRoadEnd = approvedRoad.end.position +
                     rotation * approvedRoad.Direction.normalized * Config.STREET_DEFAULT_LENGTH;
 
                 // create new road
@@ -610,7 +623,7 @@ namespace CityGen
 
                     // figure out the end point of new branch road
                     rotation = Quaternion.Euler(0, branchDigree, 0);
-                    potentialRoadEnd = branchStart +
+                    potentialRoadEnd = branchStart.position +
                         rotation * approvedRoad.Direction.normalized * Config.STREET_DEFAULT_LENGTH;
 
                     // create new branch road
@@ -678,16 +691,17 @@ namespace CityGen
         void drawDebug()
         {
             var roads = map.Roads.GetEnumerator();
+
             while (roads.MoveNext())
             {
                 var road = roads.Current.Value;
                 if (road.width == Config.HIGHWAY_DEFAULT_WIDTH)
                 {
-                    Debug.DrawLine(road.start, road.end, Color.red);
+                    Debug.DrawLine(road.start.position, road.end.position, Color.red);
                 }
                 else if (road.width == Config.STREET_DEFAULT_WIDTH)
                 {
-                    Debug.DrawLine(road.start, road.end, Color.blue);
+                    Debug.DrawLine(road.start.position, road.end.position, Color.blue);
                 }
             }
         }

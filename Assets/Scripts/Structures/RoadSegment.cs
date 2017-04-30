@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CityGen.Struct
 {
@@ -14,6 +13,7 @@ namespace CityGen.Struct
         // flags
         internal bool growthBlocked = false;
         internal bool successionBlocked = false;
+        internal bool tooShortJudgment = true;
         internal bool discarded = false;
 
         protected float totalLength = 0f;
@@ -48,32 +48,56 @@ namespace CityGen.Struct
             return timeDelay - other.timeDelay;
         }
 
-        public Vector3 getStart()
+        public Junction getStart()
         {
-            return roads[0].start;
+            return roads.Count > 0 ?
+                roads[0].start : null;
         }
 
-        public Vector3 getEnd()
+        public Junction getEnd()
         {
-            return roads[roads.Count - 1].end;
+            return roads.Count > 0 ?
+                roads[roads.Count - 1].end : null;
+        }
+
+        public Road getFirstRoad()
+        {
+            return roads.Count > 0 ?
+                roads[0] : null;
         }
 
         public Road getLastRoad()
         {
-            return roads[roads.Count - 1];
+            return roads.Count > 0 ?
+                roads[roads.Count - 1] : null;
         }
 
         public void updateLastRoad(Road road)
         {
-            totalLength -= roads[roads.Count - 1].Length;
-            roads[roads.Count - 1].initialize(road);
-            totalLength += road.Length;
+            if (roads.Count > 0)
+            {
+                totalLength -= roads[roads.Count - 1].Length;
+                roads[roads.Count - 1] = road;
+                totalLength += road.Length;
+            }
         }
 
         public void grow(Road road)
         {
+            if (road.Length == 0f)
+            {
+                return;
+            }
             roads.Add(road);
             totalLength += road.Length;
+        }
+
+        public void deleteLastRoad()
+        {
+            if (roads.Count > 0)
+            {
+                roads.RemoveAt(roads.Count - 1);
+            }
         }
     }
 }

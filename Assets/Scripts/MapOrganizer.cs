@@ -1,6 +1,5 @@
 ﻿using CityGen.Struct;
 using CityGen.Util;
-using System.Linq;
 using UnityEngine;
 
 namespace CityGen
@@ -36,47 +35,51 @@ namespace CityGen
 
         internal void insertRoad(Road road)
         {
+            if (road == null) return;
+            if (road.isBeManaged) return;
+
             roads.Insert(road.Bound, road);
+            road.isBeManaged = true;
             insertJunction(road.start, road);
             insertJunction(road.end, road);
         }
 
         internal void deleteRoad(Road road)
         {
-            roads.Remove(road.Bound, road);
+            if (road == null) return;
+            if (!road.isBeManaged) return;
+
+            if (roads.Remove(road.Bound, road))
+            {
+                road.isBeManaged = false;
+            }
             updateJunction(road.start, road);
             updateJunction(road.end, road);
         }
 
         internal void insertJunction(Junction junction, Road road)
         {
-            var foundJunction = junctions.Intersects(junction.Bound);
-            if (foundJunction.Any())
+            if (junction == null || road == null) return;
+            junction.add(road);
+
+            if (!junction.isBeManaged)
             {
-                foreach (var j in foundJunction)
-                {
-                    j.add(road);
-                }
-            }
-            else
-            {
-                junction.add(road);
                 junctions.Insert(junction.Bound, junction);
+                junction.isBeManaged = true;
             }
         }
 
         internal void updateJunction(Junction junction, Road road)
         {
-            var foundJunction = junctions.Intersects(junction.Bound);
-            if (foundJunction.Any())
+            if (junction == null || road == null) return;
+            junction.remove(road);
+
+            if (junction.isBeManaged)
             {
-                foreach (var j in foundJunction)
+                if (junction.RoadsCount == 0 &&
+                    junctions.Remove(junction.Bound, junction))
                 {
-                    j.remove(road);
-                    if (j.RoadsCount == 0)
-                    {
-                        junctions.Remove(j.Bound, j);
-                    }
+                    junction.isBeManaged = false;
                 }
             }
         }
