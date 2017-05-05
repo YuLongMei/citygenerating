@@ -6,10 +6,12 @@ namespace CityGen.Struct
     public class Junction
     {
         internal Vector3 position;
+        private Rect bound;
 
         private HashSet<Road> connectedRoads = new HashSet<Road>();
 
         // flag
+        private bool validBound = false;
         internal bool isBeManaged = false;
 
         public Junction(Vector3 position)
@@ -64,11 +66,19 @@ namespace CityGen.Struct
 
         public Rect Bound
         {
-            get { return new 
-                    Rect(position.x - Config.FLOAT_DELTA,
-                    position.z - Config.FLOAT_DELTA,
-                    Config.FLOAT_DELTA * 2,
-                    Config.FLOAT_DELTA * 2); }
+            get
+            {
+                if (!validBound)
+                {
+                    bound = new Rect(
+                        position.x - Config.FLOAT_DELTA,
+                        position.z - Config.FLOAT_DELTA,
+                        Config.FLOAT_DELTA * 2,
+                        Config.FLOAT_DELTA * 2);
+                    validBound = true;
+                }
+                return bound;
+            }
         }
 
         public override bool Equals(object obj)
@@ -79,6 +89,11 @@ namespace CityGen.Struct
         public override int GetHashCode()
         {
             return position.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return position.ToString();
         }
     }
 }

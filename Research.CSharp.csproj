@@ -88,11 +88,6 @@
     <Compile Include="Assets\CSharp vNext Support\AsyncTools\UnityTaskScheduler.cs" />
     <Compile Include="Assets\CSharp vNext Support\FormattableString\FormattableString.cs" />
     <Compile Include="Assets\CSharp vNext Support\FormattableString\FormattableStringFactory.cs" />
-    <Compile Include="Assets\Legecy\CityGenerator.cs" />
-    <Compile Include="Assets\Legecy\ObjectContainer.cs" />
-    <Compile Include="Assets\Legecy\utils\Building.cs" />
-    <Compile Include="Assets\Legecy\utils\Road.cs" />
-    <Compile Include="Assets\Legecy\utils\StraightLine.cs" />
     <Compile Include="Assets\Scripts\CityGenerator.cs" />
     <Compile Include="Assets\Scripts\Configuration\Config.cs" />
     <Compile Include="Assets\Scripts\MapOrganizer.cs" />
@@ -103,6 +98,7 @@
     <Compile Include="Assets\Scripts\ParameterMaps\SimulatedParaMap.cs" />
     <Compile Include="Assets\Scripts\Perlin.cs" />
     <Compile Include="Assets\Scripts\SimplexNoise.cs" />
+    <Compile Include="Assets\Scripts\Structures\Block.cs" />
     <Compile Include="Assets\Scripts\Structures\IntersectionInfo.cs" />
     <Compile Include="Assets\Scripts\Structures\Junction.cs" />
     <Compile Include="Assets\Scripts\Structures\MetaInformation.cs" />

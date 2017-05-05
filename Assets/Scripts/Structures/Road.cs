@@ -14,7 +14,10 @@ namespace CityGen.Struct
         private float length;
         private Vector3 direction;
 
+        private Rect bound;
+
         // flag
+        private bool validBound = false;
         internal bool isBeManaged = false;
 
         public Road()
@@ -59,6 +62,22 @@ namespace CityGen.Struct
             return new Road(start, end.position + direction.normalized * stretchLength, width);
         }
 
+        public Road reverse()
+        {
+            return new Road(end, start, width);
+        }
+
+        /// <summary>
+        /// Get the appropriate direction relative to
+        /// the given road.
+        /// </summary>
+        /// <param name="road"></param>
+        /// <returns></returns>
+        public Vector3 getRightDirection(Road road)
+        {
+            return (road.end == end || road.start == start) ? road.Direction : -road.Direction;
+        }
+
         /// <summary>
         /// Return the angle between 2 roads.
         /// These 2 roads must connect to each other.
@@ -67,9 +86,7 @@ namespace CityGen.Struct
         /// <returns>the angle</returns>
         public float getAngleWith(Road road)
         {
-            var roadDirection =
-                (road.end == end || road.start == start) ? road.Direction : -road.Direction;
-            return Vector3.Angle(direction, roadDirection);
+            return Vector3.Angle(direction, getRightDirection(road));
         }
 
         public List<Road> split(Junction splitPoint)
@@ -100,11 +117,18 @@ namespace CityGen.Struct
         {
             get
             {
-                return new Rect(
-                    Mathf.Min(start.position.x, end.position.x),
-                    Mathf.Min(start.position.z, end.position.z),
-                    Mathf.Abs(start.position.x - end.position.x),
-                    Mathf.Abs(start.position.z - end.position.z));
+                if (!validBound)
+                {
+                    var width = Mathf.Abs(start.position.x - end.position.x);
+                    var height = Mathf.Abs(start.position.z - end.position.z);
+                    bound = new Rect(
+                        Mathf.Min(start.position.x, end.position.x),
+                        Mathf.Min(start.position.z, end.position.z),
+                        Mathf.Approximately(width, 0f) ? Config.FLOAT_DELTA : width,
+                        Mathf.Approximately(height, 0f) ? Config.FLOAT_DELTA : height);
+                    validBound = true;
+                }
+                return bound;
             }
         }
 
@@ -118,6 +142,11 @@ namespace CityGen.Struct
         public override int GetHashCode()
         {
             return start.GetHashCode() ^ end.GetHashCode() ^ width.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return start.ToString() + " " + end.ToString() + " " + width;
         }
     }
 }

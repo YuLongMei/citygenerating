@@ -1,6 +1,7 @@
 ﻿using CityGen.Struct;
 using CityGen.Util;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace CityGen
 {
@@ -11,6 +12,7 @@ namespace CityGen
 
         private Quadtree<Road> roads;
         private Quadtree<Junction> junctions;
+        private List<Block> blocks;
 
         public MapOrganizer(Vector2 minMapPostion, Vector2 maxMapPostion)
         {
@@ -19,8 +21,9 @@ namespace CityGen
 
             // initalize quadtree
             Rect r = new Rect(minMapPostion, maxMapPostion - minMapPostion);
-            junctions = new Quadtree<Junction>(r, 63, 8);
-            roads = new Quadtree<Road>(r, 31, 8);
+            junctions = new Quadtree<Junction>(r, 31, 8);
+            roads = new Quadtree<Road>(r, 63, 8);
+            blocks = new List<Block>();
         }
 
         public Quadtree<Road> Roads
@@ -31,6 +34,21 @@ namespace CityGen
         public Quadtree<Junction> Junctions
         {
             get { return junctions; }
+        }
+
+        public List<Block> Blocks
+        {
+            get { return blocks; }
+        }
+
+        internal IEnumerable<Road> RoadsEnumerable
+        {
+            get { return roads.Intersects(roads.Bounds); }
+        }
+
+        internal IEnumerable<Junction> JunctionsEnumerable
+        {
+            get { return junctions.Intersects(junctions.Bounds); }
         }
 
         internal void insertRoad(Road road)
@@ -82,6 +100,11 @@ namespace CityGen
                     junction.isBeManaged = false;
                 }
             }
+        }
+
+        internal void addBlock(Block block)
+        {
+            blocks.Add(block);
         }
     }
 }

@@ -63,6 +63,13 @@ namespace CityGen.Util
                 return false;
             }
         }
+
+        internal static float angle360(Vector3 from, Vector3 to)
+        {
+            Vector3 crossProduct = Vector3.Cross(from, to);
+            float angle = Vector3.Angle(from, to);
+            return crossProduct.y > 0 ? angle : 360f - angle;
+        }
     }
 }
 

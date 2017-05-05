@@ -1,6 +1,7 @@
 ﻿using C5;
 using CityGen.ParaMaps;
 using CityGen.Struct;
+using CityGen.Util;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +79,7 @@ namespace CityGen
 
             // first road segment
             Vector2 centre = (maxMapPostion + minMapPostion) * .5f;
-            var centre3 = new Vector3(centre.x, 0, centre.y);
+            var centre3 = new Junction(centre.x, 0, centre.y);
             Road rootRoad = new Road(
                 centre3,
                 new Vector3(centre.x + Config.HIGHWAY_DEFAULT_LENGTH, 0, centre.y),
@@ -151,8 +152,11 @@ namespace CityGen
 
             Debug.Log(map.Roads.Count);
             Debug.Log(map.Junctions.Count);
+
+            yield return StartCoroutine(findBlocks());
         }
 
+        #region Road Generation
         #region Local Constraint
         /// <summary>
         /// General local constraint
@@ -309,7 +313,7 @@ namespace CityGen
                 return false;
             }
 
-            seg.updateLastRoad(new Road(originalRoad.start, closest.position, originalRoad.width));
+            seg.updateLastRoad(new Road(originalRoad.start, closest, originalRoad.width));
             return true;
         }
 
@@ -395,6 +399,7 @@ namespace CityGen
 
             return seg.tooShortJudgment ? 
                 seg.TotalLength <= Config.SHORTEST_ROAD_LENGTH : seg.discarded;
+            //return false;
         }
         #endregion
 
@@ -674,6 +679,89 @@ namespace CityGen
             return potentialSegs.Count > 0;
         }
         #endregion
+        #endregion
+
+        #region Allotment Generation
+        protected IEnumerator findBlocks()
+        {
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var roadsObjects = map.RoadsEnumerable;
+            var twowayRoadsObjects = new System.Collections.Generic.HashSet<Road>(
+                roadsObjects
+                // Reversed roads.
+                .Select(item => item.reverse())
+                // Union forward and reversed roads.
+                .Union(roadsObjects));
+            var junctionsEnumerator = map.JunctionsEnumerable.GetEnumerator();
+
+            while (junctionsEnumerator.MoveNext())
+            {
+                // Current junction
+                var junction = junctionsEnumerator.Current;
+
+                var connectedRoadsEnumerator = junction.Roads.GetEnumerator();
+                while (connectedRoadsEnumerator.MoveNext())
+                {
+                    // Current road
+                    var road = connectedRoadsEnumerator.Current;
+                    var block = new Block();
+
+                    // Current junction as start position
+                    var endJunction = road.start.Equals(junction) ? road.end : road.start;
+                    var desiredRoad = new Road(junction, endJunction, road.width);
+
+                    // Loop until roads form a closed block.
+                    while (twowayRoadsObjects.Count > 0)
+                    {
+                        // The road which we want is not exist.
+                        if (!twowayRoadsObjects.Remove(desiredRoad))
+                        {
+                            break;
+                        }
+
+                        block.addEdges(desiredRoad);
+
+                        if (block.isClosure())
+                        {
+                            // Add it to global map
+                            map.addBlock(block);
+                            break;
+                        }
+
+                        // Get the most left turn road.
+                        var leftTurnRoad = endJunction.Roads
+                            .Where(item => !(item.Equals(desiredRoad) || item.Equals(desiredRoad.reverse())))
+                            .OrderBy(item =>
+                            {
+                                Vector3 roadDir = desiredRoad.getRightDirection(item);
+                                return Math.angle360(desiredRoad.Direction, roadDir);
+                            })
+                            .FirstOrDefault();
+
+                        if (leftTurnRoad == null)
+                        {
+                            break;
+                        }
+
+                        var startJunction = endJunction;
+                        endJunction = 
+                            leftTurnRoad.start.Equals(endJunction) ? leftTurnRoad.end : leftTurnRoad.start;
+                        desiredRoad =
+                            new Road(startJunction, endJunction, leftTurnRoad.width);
+                    }
+                }
+                
+            }
+            yield return null;
+
+            watch.Stop();
+
+            Debug.Log(watch.ElapsedMilliseconds);
+
+            Debug.Log(map.Blocks.Count);
+        }
+        #endregion
 
         public bool withinRange(Junction junction)
         {
@@ -706,16 +794,16 @@ namespace CityGen
             }
         }
 
-        /*void OnDrawGizmos()
+        void OnDrawGizmos()
         {
             var junctions = map.Junctions.GetEnumerator();
             while (junctions.MoveNext())
             {
                 var junction = junctions.Current.Value;
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawSphere(junction.position, .3f);
+                Gizmos.DrawSphere(junction.position, .5f);
             }
-        }*/
+        }
         #endregion
     }
 }
