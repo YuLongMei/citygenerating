@@ -50,11 +50,18 @@ namespace CityGen.Struct
 
             direction = end.position - start.position;
             length = direction.magnitude;
+
+            validBound = false;
         }
 
         public void initialize(Road road)
         {
             initialize(road.start, road.end, road.width);
+        }
+
+        public Road translate(Vector3 translationDir)
+        {
+            return new Road(start.position + translationDir, end.position + translationDir, width);
         }
 
         public Road stretch(float stretchLength)
@@ -73,7 +80,7 @@ namespace CityGen.Struct
         /// </summary>
         /// <param name="road"></param>
         /// <returns></returns>
-        public Vector3 getRightDirection(Road road)
+        public Vector3 getRelativeDirection(Road road)
         {
             return (road.end == end || road.start == start) ? road.Direction : -road.Direction;
         }
@@ -86,7 +93,7 @@ namespace CityGen.Struct
         /// <returns>the angle</returns>
         public float getAngleWith(Road road)
         {
-            return Vector3.Angle(direction, getRightDirection(road));
+            return Vector3.Angle(direction, getRelativeDirection(road));
         }
 
         public List<Road> split(Junction splitPoint)

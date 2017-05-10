@@ -150,8 +150,8 @@ namespace CityGen
                 }
             }
 
-            Debug.Log(map.Roads.Count);
-            Debug.Log(map.Junctions.Count);
+            Debug.Log("Road counts: " + map.Roads.Count);
+            Debug.Log("Junction counts: " + map.Junctions.Count);
 
             yield return StartCoroutine(findBlocks());
         }
@@ -294,7 +294,7 @@ namespace CityGen
             {
                 map.insertRoad(road);
             }
-            map.deleteRoad(nearestSeg.intersectedRoad);
+            map.deleteRoad(nearestSeg.intersectedRoad, false);
 
             // return
             seg.updateLastRoad(nearestSeg.proposedRoad);
@@ -684,8 +684,11 @@ namespace CityGen
         #region Allotment Generation
         protected IEnumerator findBlocks()
         {
+            //////////////////////////////// Timer ///////////////////////////////
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             watch.Start();
+            //////////////////////////////// Timer ///////////////////////////////
+
             var roadsObjects = map.RoadsEnumerable;
             var twowayRoadsObjects = new System.Collections.Generic.HashSet<Road>(
                 roadsObjects
@@ -694,6 +697,7 @@ namespace CityGen
                 // Union forward and reversed roads.
                 .Union(roadsObjects));
             var junctionsEnumerator = map.JunctionsEnumerable.GetEnumerator();
+            int junctionCount = 0;
 
             while (junctionsEnumerator.MoveNext())
             {
@@ -734,7 +738,7 @@ namespace CityGen
                             .Where(item => !(item.Equals(desiredRoad) || item.Equals(desiredRoad.reverse())))
                             .OrderBy(item =>
                             {
-                                Vector3 roadDir = desiredRoad.getRightDirection(item);
+                                Vector3 roadDir = desiredRoad.getRelativeDirection(item);
                                 return Math.angle360(desiredRoad.Direction, roadDir);
                             })
                             .FirstOrDefault();
@@ -751,15 +755,21 @@ namespace CityGen
                             new Road(startJunction, endJunction, leftTurnRoad.width);
                     }
                 }
-                
+
+                ++junctionCount;
+                if (junctionCount >= Config.JUNCTION_COUNT_TO_FIND_BLOCKS_PER_FRAME)
+                {
+                    junctionCount = 0;
+                    yield return null;
+                }
             }
-            yield return null;
 
+            //////////////////////////////// Timer ///////////////////////////////
             watch.Stop();
+            Debug.Log("Time cost of finding blocks: " + watch.ElapsedMilliseconds + "ms");
+            //////////////////////////////// Timer ///////////////////////////////
 
-            Debug.Log(watch.ElapsedMilliseconds);
-
-            Debug.Log(map.Blocks.Count);
+            Debug.Log("Block counts: " + map.Blocks.Count);
         }
         #endregion
 
@@ -778,23 +788,38 @@ namespace CityGen
         #region Debug
         void drawDebug()
         {
-            var roads = map.Roads.GetEnumerator();
+            bool drawBlocks = false;
 
-            while (roads.MoveNext())
+            var blocks = map.Blocks;
+            foreach (var b in blocks)
             {
-                var road = roads.Current.Value;
-                if (road.width == Config.HIGHWAY_DEFAULT_WIDTH)
+                var boundary = b.Boundary.ToList();
+                for (int i = 0; i < boundary.Count - 1; ++i)
                 {
-                    Debug.DrawLine(road.start.position, road.end.position, Color.red);
+                    drawBlocks = true;
+                    Debug.DrawLine(boundary[i], boundary[i + 1], new Color(0.2902f, 0f, 0.56078f));
                 }
-                else if (road.width == Config.STREET_DEFAULT_WIDTH)
+            }
+
+            if (!drawBlocks)
+            {
+                var roads = map.Roads.GetEnumerator();
+                while (roads.MoveNext())
                 {
-                    Debug.DrawLine(road.start.position, road.end.position, Color.blue);
+                    var road = roads.Current.Value;
+                    if (road.width == Config.HIGHWAY_DEFAULT_WIDTH)
+                    {
+                        Debug.DrawLine(road.start.position, road.end.position, Color.red);
+                    }
+                    else if (road.width == Config.STREET_DEFAULT_WIDTH)
+                    {
+                        Debug.DrawLine(road.start.position, road.end.position, Color.blue);
+                    }
                 }
             }
         }
 
-        void OnDrawGizmos()
+        /*void OnDrawGizmos()
         {
             var junctions = map.Junctions.GetEnumerator();
             while (junctions.MoveNext())
@@ -803,7 +828,7 @@ namespace CityGen
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawSphere(junction.position, .5f);
             }
-        }
+        }*/
         #endregion
     }
 }

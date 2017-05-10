@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace CityGen.Util
 {
@@ -69,6 +69,21 @@ namespace CityGen.Util
             Vector3 crossProduct = Vector3.Cross(from, to);
             float angle = Vector3.Angle(from, to);
             return crossProduct.y > 0 ? angle : 360f - angle;
+        }
+
+        internal static float polygonAreaByShoelace(List<Vector3> vertices)
+        {
+            float area = 0f;
+
+            for (int index = 0; index < vertices.Count - 1; ++index)
+            {
+                var cur = vertices[index];
+                var next = vertices[index + 1];
+
+                area += cur.x * next.z - next.x * cur.z;
+            }
+
+            return .5f * area;
         }
     }
 }

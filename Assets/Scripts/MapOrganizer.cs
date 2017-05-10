@@ -1,7 +1,8 @@
 ﻿using CityGen.Struct;
 using CityGen.Util;
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace CityGen
 {
@@ -56,13 +57,21 @@ namespace CityGen
             if (road == null) return;
             if (road.isBeManaged) return;
 
+            // Do not insert this road if there's a reversed one.
+            var reversedRoad = road.reverse();
+            if (roads.Intersects(reversedRoad.Bound)
+                .Any(item => item.Equals(reversedRoad)))
+            {
+                return;
+            }
+
             roads.Insert(road.Bound, road);
             road.isBeManaged = true;
             insertJunction(road.start, road);
             insertJunction(road.end, road);
         }
 
-        internal void deleteRoad(Road road)
+        internal void deleteRoad(Road road, bool deleteToFork = true)
         {
             if (road == null) return;
             if (!road.isBeManaged) return;
@@ -73,6 +82,19 @@ namespace CityGen
             }
             updateJunction(road.start, road);
             updateJunction(road.end, road);
+
+            // Delete all roads until meeting a fork.
+            if (deleteToFork)
+            {
+                if (road.start.RoadsCount == 1)
+                {
+                    deleteRoad(road.start.Roads.First());
+                }
+                if (road.end.RoadsCount == 1)
+                {
+                    deleteRoad(road.end.Roads.First());
+                }
+            }
         }
 
         internal void insertJunction(Junction junction, Road road)

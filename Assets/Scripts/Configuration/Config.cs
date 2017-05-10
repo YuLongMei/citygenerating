@@ -2,7 +2,7 @@
 {
     public static class Config
     {
-        #region InputSimulation
+        #region Input Simulation
         internal static readonly float PARAMAP_GRANULARITY = 800f;
         internal static readonly float MIN_POPULATION_DENSITY_VALUE = 0.5f;
         internal static readonly float MAX_POPULATION_DENSITY_VALUE = 1f;
@@ -15,7 +15,7 @@
         internal static readonly float STREET_DEFAULT_LENGTH = 10f;
         #endregion
 
-        #region RoadGenerating
+        #region Road Generation
         internal static readonly int ROAD_COUNT_PER_FRAME = 50;
         internal static readonly int ROAD_COUNT_LIMIT = 100000;
         internal static readonly float DETECTIVE_RADIUS_FROM_ENDS = .5f * STREET_DEFAULT_LENGTH;
@@ -31,6 +31,10 @@
         internal static readonly float STREET_BRANCH_MIN_DEGREE = 88f;
         internal static readonly float STREET_BRANCH_MAX_DEGREE = 92f;
         internal static readonly float STREET_SEGMENT_MAX_LENGTH = 40f;
+        #endregion
+
+        #region Allotment Generation
+        internal static readonly int JUNCTION_COUNT_TO_FIND_BLOCKS_PER_FRAME = 10;
         #endregion
 
         #region Other
