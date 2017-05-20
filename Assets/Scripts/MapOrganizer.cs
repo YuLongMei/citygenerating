@@ -13,6 +13,7 @@ namespace CityGen
 
         private Quadtree<Road> roads;
         private Quadtree<Junction> junctions;
+        private HashSet<Road> reversedRoads;
         private List<Block> blocks;
 
         public MapOrganizer(Vector2 minMapPostion, Vector2 maxMapPostion)
@@ -24,6 +25,7 @@ namespace CityGen
             Rect r = new Rect(minMapPostion, maxMapPostion - minMapPostion);
             junctions = new Quadtree<Junction>(r, 31, 8);
             roads = new Quadtree<Road>(r, 63, 8);
+            reversedRoads = new HashSet<Road>();
             blocks = new List<Block>();
         }
 
@@ -35,6 +37,16 @@ namespace CityGen
         public Quadtree<Junction> Junctions
         {
             get { return junctions; }
+        }
+
+        public HashSet<Road> twowayRoads
+        {
+            get
+            {
+                var twowayRoadsObjects = new HashSet<Road>(reversedRoads);
+                twowayRoadsObjects.UnionWith(RoadsEnumerable);
+                return twowayRoadsObjects;
+            }
         }
 
         public List<Block> Blocks
@@ -59,14 +71,16 @@ namespace CityGen
 
             // Do not insert this road if there's a reversed one.
             var reversedRoad = road.reverse();
-            if (roads.Intersects(reversedRoad.Bound)
-                .Any(item => item.Equals(reversedRoad)))
+            if (reversedRoads.Contains(reversedRoad) ||
+                reversedRoads.Contains(road))
             {
                 return;
             }
 
             roads.Insert(road.Bound, road);
             road.isBeManaged = true;
+            reversedRoads.Add(reversedRoad);
+
             insertJunction(road.start, road);
             insertJunction(road.end, road);
         }
@@ -75,11 +89,13 @@ namespace CityGen
         {
             if (road == null) return;
             if (!road.isBeManaged) return;
-
+            
             if (roads.Remove(road.Bound, road))
             {
                 road.isBeManaged = false;
+                reversedRoads.Remove(road.reverse());
             }
+
             updateJunction(road.start, road);
             updateJunction(road.end, road);
 

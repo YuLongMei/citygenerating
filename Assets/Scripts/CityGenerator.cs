@@ -118,7 +118,7 @@ namespace CityGen
                         continue;
                     }
                 }
-
+                
                 // It's valid, so add it to list. It is now part of the final result
                 map.insertRoad(minSeg.getLastRoad());
 
@@ -152,6 +152,7 @@ namespace CityGen
 
             Debug.Log("Road counts: " + map.Roads.Count);
             Debug.Log("Junction counts: " + map.Junctions.Count);
+            debug_drawBlocks = true;
 
             yield return StartCoroutine(findBlocks());
         }
@@ -174,26 +175,7 @@ namespace CityGen
                 seg.discarded = false;
                 return false;
             }
-
-            // 0.2 If segment grows beyond the fixed length
-            if (seg.metaInformation.Type.Equals("Highway") && 
-                seg.TotalLength >= Config.HIGHWAY_SEGMENT_MAX_LENGTH)
-            {
-                seg.growthBlocked = true;
-                seg.successionBlocked = false;
-                seg.discarded = false;
-                return true;
-            }
-
-            // 0.3 
-            if (seg.getEnd().RoadsCount > 1)
-            {
-                seg.growthBlocked = true;
-                seg.successionBlocked = false;
-                seg.discarded = false;
-                return true;
-            }
-
+            
             // 1. If a candidate segment crosses another segment 
             // then join the roads together to form a T-Junction.
             bool originalIntersectWithAnotherRoad =
@@ -219,7 +201,7 @@ namespace CityGen
                 seg.discarded = isDiscarded(seg);
                 return !seg.discarded;
             }
-
+            
             // 3. If a candidate segment stops near to another segment
             // then extend it to join the roads and form a T-Junction.
             var extendedSeg =
@@ -238,8 +220,18 @@ namespace CityGen
                 seg.discarded = isDiscarded(seg);
                 return !seg.discarded;
             }
+            
+            // 4.1 If segment grows beyond the fixed length
+            if (seg.metaInformation.Type.Equals("Highway") &&
+                seg.TotalLength >= Config.HIGHWAY_SEGMENT_MAX_LENGTH)
+            {
+                seg.growthBlocked = true;
+                seg.successionBlocked = false;
+                seg.discarded = false;
+                return true;
+            }
 
-            // 4. Accept this segment without any changes.
+            // 4.2 Accept this segment without any changes.
             seg.growthBlocked = false;
             seg.successionBlocked = false;
             return true;
@@ -308,12 +300,29 @@ namespace CityGen
             Junction closest =
                 findClosestJunction(originalRoad.end, Config.DETECTIVE_RADIUS_FROM_ENDS);
 
+            // There's no junction near the end.
             if (closest == null)
             {
                 return false;
             }
 
-            seg.updateLastRoad(new Road(originalRoad.start, closest, originalRoad.width));
+            // A new road connected to closest junction.
+            var newRoad = new Road(originalRoad.start, closest, originalRoad.width);
+            
+            // Roads which maybe have intersections.
+            var intersectiveRoads = map.Roads.Intersects(newRoad.Bound);
+
+            // Finding out if overlapped.
+            if (intersectiveRoads
+                .Any(road => road.getAngleWith(newRoad) == 0f))
+            {
+                seg.tooShortJudgment = false;
+                seg.deleteLastRoad();
+                return true;
+            }
+
+            // There's no overlapping, then accept the new road.
+            seg.updateLastRoad(newRoad);
             return true;
         }
 
@@ -689,13 +698,7 @@ namespace CityGen
             watch.Start();
             //////////////////////////////// Timer ///////////////////////////////
 
-            var roadsObjects = map.RoadsEnumerable;
-            var twowayRoadsObjects = new System.Collections.Generic.HashSet<Road>(
-                roadsObjects
-                // Reversed roads.
-                .Select(item => item.reverse())
-                // Union forward and reversed roads.
-                .Union(roadsObjects));
+            var twowayRoadsObjects = map.twowayRoads;
             var junctionsEnumerator = map.JunctionsEnumerable.GetEnumerator();
             int junctionCount = 0;
 
@@ -770,6 +773,7 @@ namespace CityGen
             //////////////////////////////// Timer ///////////////////////////////
 
             Debug.Log("Block counts: " + map.Blocks.Count);
+            debug_drawRoadmap = false;
         }
         #endregion
 
@@ -786,22 +790,29 @@ namespace CityGen
         }
 
         #region Debug
+        private bool debug_drawRoadmap = true;
+        private bool debug_drawBlocks = false;
+
         void drawDebug()
         {
-            bool drawBlocks = false;
+            Color block_purple = new Color(0.2902f, 0f, 0.56078f);
+            Color highway_red = new Color(1f, 0.32157f, 0.32157f);
+            Color street_blue = new Color(0.16078f, 0.58039f, 1f);
 
-            var blocks = map.Blocks;
-            foreach (var b in blocks)
+            if (debug_drawBlocks)
             {
-                var boundary = b.Boundary.ToList();
-                for (int i = 0; i < boundary.Count - 1; ++i)
+                var blocks = map.Blocks;
+                foreach (var b in blocks)
                 {
-                    drawBlocks = true;
-                    Debug.DrawLine(boundary[i], boundary[i + 1], new Color(0.2902f, 0f, 0.56078f));
+                    var boundary = b.Boundary.ToList();
+                    for (int i = 0; i < boundary.Count - 1; ++i)
+                    {
+                        Debug.DrawLine(boundary[i], boundary[i + 1], block_purple);
+                    }
                 }
             }
-
-            if (!drawBlocks)
+            
+            if (debug_drawRoadmap)
             {
                 var roads = map.Roads.GetEnumerator();
                 while (roads.MoveNext())
@@ -809,11 +820,11 @@ namespace CityGen
                     var road = roads.Current.Value;
                     if (road.width == Config.HIGHWAY_DEFAULT_WIDTH)
                     {
-                        Debug.DrawLine(road.start.position, road.end.position, Color.red);
+                        Debug.DrawLine(road.start.position, road.end.position, highway_red);
                     }
                     else if (road.width == Config.STREET_DEFAULT_WIDTH)
                     {
-                        Debug.DrawLine(road.start.position, road.end.position, Color.blue);
+                        Debug.DrawLine(road.start.position, road.end.position, street_blue);
                     }
                 }
             }

@@ -1,5 +1,55 @@
 ********************************************************************************
-*                      Wednesday, May 10, 2017 4:56:49 PM                      *
+*                      Saturday, May 20, 2017 7:09:51 PM                       *
+********************************************************************************
+CSharpCompilerWrapper.exe version: 2.0.0.0
+Platform: Windows
+Target assembly: Assembly-CSharp-firstpass.dll
+Project directory: C:\Users\admin\Documents\Research
+Unity 'Data' or 'Frameworks' directory: C:/Program Files/Unity/Editor/Data
+Compiler: Microsoft C# 6.0
+
+- Compilation -----------------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-6a999bef29a4d3240a8bb2f940c7389c 
+Exit code: 0
+Elapsed time: 0.44 sec
+
+- Compiler output (0 lines):
+
+- Compiler errors (21 lines):
+0: Assets\Standard Assets\Utility\ParticleSystemDestroyer.cs(28,43): warning CS0618: 'ParticleSystem.startLifetime' is obsolete: 'startLifetime property is deprecated. Use main.startLifetime or main.startLifetimeMultiplier instead.'
+1: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(17,40): warning CS0649: Field 'FirstPersonController.m_JumpSpeed' is never assigned to, and will always have its default value 0
+2: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(21,39): warning CS0649: Field 'FirstPersonController.m_UseFovKick' is never assigned to, and will always have its default value false
+3: Assets\Standard Assets\Utility\SmoothFollow.cs(19,17): warning CS0649: Field 'SmoothFollow.rotationDamping' is never assigned to, and will always have its default value 0
+4: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(16,56): warning CS0649: Field 'FirstPersonController.m_RunstepLenghten' is never assigned to, and will always have its default value 0
+5: Assets\Standard Assets\Utility\SmoothFollow.cs(10,21): warning CS0649: Field 'SmoothFollow.target' is never assigned to, and will always have its default value null
+6: Assets\Standard Assets\Cameras\Scripts\LookatTarget.cs(22,42): warning CS0649: Field 'LookatTarget.m_RotationRange' is never assigned to, and will always have its default value
+7: Assets\Standard Assets\Utility\PlatformSpecificContent.cs(21,51): warning CS0649: Field 'PlatformSpecificContent.m_BuildTargetGroup' is never assigned to, and will always have its default value
+8: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(20,44): warning CS0649: Field 'FirstPersonController.m_MouseLook' is never assigned to, and will always have its default value null
+9: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(29,44): warning CS0649: Field 'FirstPersonController.m_LandSound' is never assigned to, and will always have its default value null
+10: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(18,40): warning CS0649: Field 'FirstPersonController.m_StickToGroundForce' is never assigned to, and will always have its default value 0
+11: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(23,39): warning CS0649: Field 'FirstPersonController.m_UseHeadBob' is never assigned to, and will always have its default value false
+12: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(15,40): warning CS0649: Field 'FirstPersonController.m_RunSpeed' is never assigned to, and will always have its default value 0
+13: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(26,40): warning CS0649: Field 'FirstPersonController.m_StepInterval' is never assigned to, and will always have its default value 0
+14: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(19,40): warning CS0649: Field 'FirstPersonController.m_GravityMultiplier' is never assigned to, and will always have its default value 0
+15: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(27,46): warning CS0649: Field 'FirstPersonController.m_FootstepSounds' is never assigned to, and will always have its default value null
+16: Assets\Standard Assets\Utility\WaypointProgressTracker.cs(14,50): warning CS0649: Field 'WaypointProgressTracker.circuit' is never assigned to, and will always have its default value null
+17: Assets\Standard Assets\Utility\PlatformSpecificContent.cs(24,39): warning CS0649: Field 'PlatformSpecificContent.m_ChildrenOfThisObject' is never assigned to, and will always have its default value false
+18: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(28,44): warning CS0649: Field 'FirstPersonController.m_JumpSound' is never assigned to, and will always have its default value null
+19: Assets\Standard Assets\Utility\SmoothFollow.cs(21,17): warning CS0649: Field 'SmoothFollow.heightDamping' is never assigned to, and will always have its default value 0
+20: Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\FirstPersonController.cs(14,40): warning CS0649: Field 'FirstPersonController.m_WalkSpeed' is never assigned to, and will always have its default value 0
+
+- PDB to MDB conversion --------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
+Arguments: Temp\Assembly-CSharp-firstpass.dll
+Exit code: 0
+Elapsed time: 0.05 sec
+
+- pdb2mdb.exe output (0 lines):
+********************************************************************************
+*                      Saturday, May 20, 2017 7:09:52 PM                       *
 ********************************************************************************
 CSharpCompilerWrapper.exe version: 2.0.0.0
 Platform: Windows
@@ -11,7 +61,7 @@ Compiler: Microsoft C# 6.0
 - Compilation -----------------------------------------------
 
 Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
-Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-e26f182b16bbd054b9f76defe8a7d895 
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-7fe45d8e631eff0469c9a9b23f369d25 
 Exit code: 0
 Elapsed time: 0.48 sec
 
@@ -24,11 +74,11 @@ Elapsed time: 0.48 sec
 Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
 Arguments: Temp\Assembly-CSharp.dll
 Exit code: 0
-Elapsed time: 0.04 sec
+Elapsed time: 0.05 sec
 
 - pdb2mdb.exe output (0 lines):
 ********************************************************************************
-*                      Wednesday, May 10, 2017 4:56:50 PM                      *
+*                      Saturday, May 20, 2017 7:09:53 PM                       *
 ********************************************************************************
 CSharpCompilerWrapper.exe version: 2.0.0.0
 Platform: Windows
@@ -40,9 +90,125 @@ Compiler: Microsoft C# 6.0
 - Compilation -----------------------------------------------
 
 Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
-Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-2bf2042a1ed4b4d4d9467fb3b060e3b1 
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-1e0c0c924e24b14479334462b0b4769d 
 Exit code: 0
-Elapsed time: 0.33 sec
+Elapsed time: 0.34 sec
+
+- Compiler output (0 lines):
+
+- Compiler errors (0 lines):
+
+- PDB to MDB conversion --------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
+Arguments: Temp\Assembly-CSharp-Editor.dll
+Exit code: 0
+Elapsed time: 0.04 sec
+
+- pdb2mdb.exe output (0 lines):
+********************************************************************************
+*                      Saturday, May 20, 2017 7:11:10 PM                       *
+********************************************************************************
+CSharpCompilerWrapper.exe version: 2.0.0.0
+Platform: Windows
+Target assembly: Assembly-CSharp.dll
+Project directory: C:\Users\admin\Documents\Research
+Unity 'Data' or 'Frameworks' directory: C:/Program Files/Unity/Editor/Data
+Compiler: Microsoft C# 6.0
+
+- Compilation -----------------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-d0e2bdf5d53993549987f9e98b777ad0 
+Exit code: 0
+Elapsed time: 0.49 sec
+
+- Compiler output (0 lines):
+
+- Compiler errors (0 lines):
+
+- PDB to MDB conversion --------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
+Arguments: Temp\Assembly-CSharp.dll
+Exit code: 0
+Elapsed time: 0.05 sec
+
+- pdb2mdb.exe output (0 lines):
+********************************************************************************
+*                      Saturday, May 20, 2017 7:11:11 PM                       *
+********************************************************************************
+CSharpCompilerWrapper.exe version: 2.0.0.0
+Platform: Windows
+Target assembly: Assembly-CSharp-Editor.dll
+Project directory: C:\Users\admin\Documents\Research
+Unity 'Data' or 'Frameworks' directory: C:/Program Files/Unity/Editor/Data
+Compiler: Microsoft C# 6.0
+
+- Compilation -----------------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-3c0a8b6a924b11c418e5e7feb39bb1c6 
+Exit code: 0
+Elapsed time: 0.36 sec
+
+- Compiler output (0 lines):
+
+- Compiler errors (0 lines):
+
+- PDB to MDB conversion --------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
+Arguments: Temp\Assembly-CSharp-Editor.dll
+Exit code: 0
+Elapsed time: 0.05 sec
+
+- pdb2mdb.exe output (0 lines):
+********************************************************************************
+*                      Saturday, May 20, 2017 7:14:29 PM                       *
+********************************************************************************
+CSharpCompilerWrapper.exe version: 2.0.0.0
+Platform: Windows
+Target assembly: Assembly-CSharp.dll
+Project directory: C:\Users\admin\Documents\Research
+Unity 'Data' or 'Frameworks' directory: C:/Program Files/Unity/Editor/Data
+Compiler: Microsoft C# 6.0
+
+- Compilation -----------------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-340e0a359b24fac4c92d0987c5cad2b5 
+Exit code: 0
+Elapsed time: 0.48 sec
+
+- Compiler output (0 lines):
+
+- Compiler errors (0 lines):
+
+- PDB to MDB conversion --------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\pdb2mdb.exe
+Arguments: Temp\Assembly-CSharp.dll
+Exit code: 0
+Elapsed time: 0.05 sec
+
+- pdb2mdb.exe output (0 lines):
+********************************************************************************
+*                      Saturday, May 20, 2017 7:14:30 PM                       *
+********************************************************************************
+CSharpCompilerWrapper.exe version: 2.0.0.0
+Platform: Windows
+Target assembly: Assembly-CSharp-Editor.dll
+Project directory: C:\Users\admin\Documents\Research
+Unity 'Data' or 'Frameworks' directory: C:/Program Files/Unity/Editor/Data
+Compiler: Microsoft C# 6.0
+
+- Compilation -----------------------------------------------
+
+Process: C:\Users\admin\Documents\Research\CSharp60Support\Roslyn\csc.exe
+Arguments: -nostdlib+ -noconfig -nologo -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/mscorlib.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Core.dll" -r:"C:/Program Files/Unity/Editor/Data\Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-4864929367609644899dee46b0b9269c 
+Exit code: 0
+Elapsed time: 0.36 sec
 
 - Compiler output (0 lines):
 

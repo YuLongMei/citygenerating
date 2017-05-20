@@ -79,7 +79,7 @@ namespace CityGen.Struct
                     var a = tightenedVertices[index] - tightenedVertices[last];
                     var b = tightenedVertices[next] - tightenedVertices[index];
 
-                    if (Vector3.Angle(a, b) > 180f - Config.SMALLEST_DEGREE_BETWEEN_TWO_ROADS)
+                    if (Vector3.Angle(a, b) > 180 - Config.SMALLEST_DEGREE_BETWEEN_TWO_ROADS)
                     {
                         // Index needs to be counted down.
                         tightenedVertices.RemoveAt(index--);
