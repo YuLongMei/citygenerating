@@ -85,6 +85,39 @@ namespace CityGen.Util
 
             return .5f * area;
         }
+
+        /// <summary>
+        /// To determine which side of the line
+        /// a point falls on.
+        /// </summary>
+        /// <param name="a">From</param>
+        /// <param name="b">To</param>
+        /// <param name="p">Point</param>
+        /// <returns>If nagative then the point lies on one side of the line, 
+        /// and if positive then it lies on the other side. 
+        /// If zero then the point lies exactly line.</returns>
+        internal static float sideOfLineForPoint(Vector3 a, Vector3 b, Vector3 p)
+        {
+            return (p.x - a.x) * (b.z - a.z) - (p.z - a.z) * (b.x - a.x);
+        }
+
+        /// <summary>
+        /// Distance between a line and a point
+        /// </summary>
+        /// <param name="a">A point on line</param>
+        /// <param name="b">A point on line</param>
+        /// <param name="p">Point</param>
+        /// <returns>Distance</returns>
+        internal static float distanceToLine(Vector3 a, Vector3 b, Vector3 p)
+        {
+            Vector3 line = b - a;
+            return Vector3.Cross(line, p - a).magnitude / line.magnitude;
+        }
+
+        internal static Vector3 project(Vector3 a, Vector3 b, Vector3 p)
+        {
+            return Vector3.Project(p - a, b - a) + a;
+        }
     }
 }
 

@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using CityGen.Util;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using CityGen.Util;
 
 namespace CityGen.Struct
 {
     public class Block
     {
         private List<Road> edges = new List<Road>();
-        private List<Vector3> tightenedVertices = new List<Vector3>();
-        private float area = -1f;
+        private Polygon tightenedPolygon = null;
+        private List<Polygon> lots = new List<Polygon>();
 
         internal void addEdges(Road road)
         {
@@ -26,23 +26,39 @@ namespace CityGen.Struct
         {
             get
             {
-                if (tightenedVertices.Count < 4)
+                if (tightenedPolygon == null ||
+                    tightenedPolygon.vertices.Count < 4)
                 {
-                    tightenUp();
+                    if (tightenUp() == false)
+                    {
+                        return null;
+                    }
                 }
-                return tightenedVertices;
+                return tightenedPolygon.vertices;
             }
         }
 
-        public float Area
+        public IEnumerable<Vector3> BoundingBox
         {
             get
             {
-                if (area <= 0f && tightenedVertices.Count > 3)
+                if (tightenedPolygon != null)
                 {
-                    area = Math.polygonAreaByShoelace(tightenedVertices);
+                    return tightenedPolygon.BoundingBox;
                 }
-                return area;
+                return null;
+            }
+        }
+
+        public IEnumerable<Polygon> Lots
+        {
+            get
+            {
+                if (lots.Count <= 0)
+                {
+                    subdivide();
+                }
+                return lots;
             }
         }
 
@@ -50,6 +66,8 @@ namespace CityGen.Struct
         {
             if (isClosure())
             {
+                List<Vector3> vertices = new List<Vector3>();
+
                 for (int index = 0; index < edges.Count; ++index)
                 {
                     int next = (index + 1) % edges.Count;
@@ -68,27 +86,76 @@ namespace CityGen.Struct
                     var rotation = Quaternion.AngleAxis(-theta2 * Mathf.Rad2Deg, Vector3.up);
                     var newVertex = edges[index].end.position + rotation * edges[next].Direction.normalized * distance;
 
-                    tightenedVertices.Add(newVertex);
+                    vertices.Add(newVertex);
                 }
 
-                for (int index = 0; index < tightenedVertices.Count; ++index)
+                for (int index = 0; index < vertices.Count; ++index)
                 {
-                    int last = (index - 1 + tightenedVertices.Count) % tightenedVertices.Count;
-                    int next = (index + 1) % tightenedVertices.Count;
+                    int last = (index - 1 + vertices.Count) % vertices.Count;
+                    int next = (index + 1) % vertices.Count;
 
-                    var a = tightenedVertices[index] - tightenedVertices[last];
-                    var b = tightenedVertices[next] - tightenedVertices[index];
+                    var a = vertices[index] - vertices[last];
+                    var b = vertices[next] - vertices[index];
 
                     if (Vector3.Angle(a, b) > 180 - Config.SMALLEST_DEGREE_BETWEEN_TWO_ROADS)
                     {
                         // Index needs to be counted down.
-                        tightenedVertices.RemoveAt(index--);
+                        vertices.RemoveAt(index--);
                     }
                 }
 
-                tightenedVertices.Add(tightenedVertices[0]);
+                vertices.Add(vertices[0]);
+
+                tightenedPolygon = new Polygon(vertices);
             }
-            return tightenedVertices.Count > 3;
+            return tightenedPolygon != null || tightenedPolygon.vertices.Count > 3;
+        }
+
+        internal bool subdivide()
+        {
+            var _boundary = Boundary;
+
+            lots.AddRange(subdivide(tightenedPolygon));
+            
+            return lots.Count > 0;
+        }
+
+        protected List<Polygon> subdivide(Polygon polygon)
+        {
+            var lots = new List<Polygon>();
+            var parts = polygon.split();
+
+            if (parts.Count <= 0 ||
+                parts.Any(subdivisionRules))
+            {
+                lots.Add(polygon);
+                return lots;
+            }
+
+            foreach (var part in parts)
+            {
+                lots.AddRange(subdivide(part));
+            }
+
+            return lots;
+        }
+
+        protected bool subdivisionRules(Polygon polygon)
+        {
+            if (polygon.Area <= 0f)
+            {
+                return true;
+            }
+
+            var pd = polygon.getCentrePopulationDensity();
+            pd = (pd - Config.MIN_STREET_APPEAR_POPULATION_DENSITY_VALUE) / 
+                (Config.MAX_POPULATION_DENSITY_VALUE - Config.MIN_STREET_APPEAR_POPULATION_DENSITY_VALUE);
+            pd = Mathf.Max(0f, pd);
+            var minArea = Config.LOT_AREA_BASIS +
+                Mathf.Pow(pd * Config.LOT_AREA_MULTIPLE, Config.LOT_AREA_EXPONENT) +
+                Random.value * Config.LOT_AREA_CORRECTION;
+            
+            return polygon.Area < minArea;
         }
     }
 }

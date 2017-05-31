@@ -50,7 +50,7 @@ namespace CityGen
             drawDebug();
         }
 
-        protected SimulatedParaMap perlin;
+        protected static SimulatedParaMap perlin;
         public IEnumerator generate(string seed)
         {
             // initalize random state by the hash code of seed
@@ -643,7 +643,7 @@ namespace CityGen
                     // create new branch road
                     // appears where people live only
                     var populationDensity = perlin.getValue(potentialRoadEnd.x, potentialRoadEnd.z);
-                    if (populationDensity > Config.MIN_POPULATION_DENSITY_VALUE + 0.15f)
+                    if (populationDensity > Config.MIN_STREET_APPEAR_POPULATION_DENSITY_VALUE)
                     {
                         potentialRoad = new Road(branchStart, potentialRoadEnd, Config.STREET_DEFAULT_WIDTH);
                         var streetMetaInfo = new StreetMetaInfo();
@@ -775,6 +775,12 @@ namespace CityGen
             Debug.Log("Block counts: " + map.Blocks.Count);
             debug_drawRoadmap = false;
         }
+
+        internal static float getPopulationDensityValue(Polygon polygon)
+        {
+            var point = polygon.Centre;
+            return perlin.getValue(point.x, point.y);
+        }
         #endregion
 
         public bool withinRange(Junction junction)
@@ -804,10 +810,34 @@ namespace CityGen
                 var blocks = map.Blocks;
                 foreach (var b in blocks)
                 {
-                    var boundary = b.Boundary.ToList();
+                    // Blocks:
+                    /*var boundary = b.Boundary.ToList();
                     for (int i = 0; i < boundary.Count - 1; ++i)
                     {
                         Debug.DrawLine(boundary[i], boundary[i + 1], block_purple);
+                    }*/
+
+                    // Bounding Box:
+                    /*var e_boundingbox = b.BoundingBox;
+                    if (e_boundingbox != null)
+                    {
+                        var boundingbox = e_boundingbox.ToList();
+                        for (int i = 0; i < boundingbox.Count; ++i)
+                        {
+                            int next = (i + 1) % boundingbox.Count;
+                            Debug.DrawLine(boundingbox[i], boundingbox[next], Color.green);
+                        }
+                    }*/
+
+                    // Lots:
+                    var lots = b.Lots.ToList();
+                    for (int i = 0; i < lots.Count; ++i)
+                    {
+                        var v = lots[i].vertices;
+                        for (int j = 0; j < v.Count - 1; ++j)
+                        {
+                            Debug.DrawLine(v[j], v[j + 1], block_purple);
+                        }
                     }
                 }
             }

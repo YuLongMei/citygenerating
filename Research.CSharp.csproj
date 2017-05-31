@@ -106,9 +106,11 @@
     <Compile Include="Assets\Scripts\Perlin.cs" />
     <Compile Include="Assets\Scripts\SimplexNoise.cs" />
     <Compile Include="Assets\Scripts\Structures\Block.cs" />
+    <Compile Include="Assets\Scripts\Structures\BoundingBox.cs" />
     <Compile Include="Assets\Scripts\Structures\IntersectionInfo.cs" />
     <Compile Include="Assets\Scripts\Structures\Junction.cs" />
     <Compile Include="Assets\Scripts\Structures\MetaInformation.cs" />
+    <Compile Include="Assets\Scripts\Structures\Polygon.cs" />
     <Compile Include="Assets\Scripts\Structures\Road.cs" />
     <Compile Include="Assets\Scripts\Structures\RoadSegment.cs" />
     <Compile Include="Assets\Scripts\Test\PerlinTest.cs" />
