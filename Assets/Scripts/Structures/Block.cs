@@ -115,6 +115,11 @@ namespace CityGen.Struct
         {
             var _boundary = Boundary;
 
+            if (tightenedPolygon.Area > Config.MAX_BLOCK_AREA)
+            {
+                return false;
+            }
+
             lots.AddRange(subdivide(tightenedPolygon));
             
             return lots.Count > 0;

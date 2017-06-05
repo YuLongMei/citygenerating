@@ -107,5 +107,13 @@ namespace CityGen.Struct
                 }
             }
         }
+
+        internal float AspectRatio
+        {
+            get
+            {
+                return u > v ? u / v : v / u;
+            }
+        }
     }
 }

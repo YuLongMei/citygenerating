@@ -17,6 +17,9 @@ namespace CityGen
 
         public string seed = null;
 
+        public GameObject terrainPrefab;
+        public GameObject buildingPrefab;
+
         private MapOrganizer map;
         private ParameterMaps paraMaps;
 
@@ -35,9 +38,15 @@ namespace CityGen
         void Start()
         {
             map = new MapOrganizer(minMapPostion, maxMapPostion);
+            var width = maxMapPostion.x - minMapPostion.x;
+            var length = maxMapPostion.y - minMapPostion.y;
             paraMaps = new ParameterMaps(
-                (int)(maxMapPostion.x - minMapPostion.x),
-                (int)(maxMapPostion.y - minMapPostion.y));
+                (int)width, (int)length);
+
+            GameObject terrainObject =
+                Instantiate(terrainPrefab, new Vector3(minMapPostion.x, 0f, minMapPostion.y), Quaternion.identity);
+            terrainObject.GetComponent<Terrain>().terrainData.size =
+                new Vector3(width, 0, length);
 
             localConstraints += generalLocalConstraint;
             globalGoals += makeCandidatesByPopulationDensity;
@@ -66,12 +75,6 @@ namespace CityGen
                 null,
                 Random.Range(-99999f, 99999f),
                 Random.Range(-99999f, 99999f));
-            var ground = GameObject.Find("Ground");
-            ground.transform.localScale =
-                new Vector3(paraMaps.Width * ground.transform.localScale.x, 1, paraMaps.Height * ground.transform.localScale.x);
-            var renderer = ground.GetComponent<Renderer>();
-            renderer.material.mainTexture = perlin.Map;
-            renderer.material.shader = Shader.Find("Sprites/Default");
             // ------------------------------TEST---------------------------------
 
             // priority queue
@@ -693,11 +696,6 @@ namespace CityGen
         #region Allotment Generation
         protected IEnumerator findBlocks()
         {
-            //////////////////////////////// Timer ///////////////////////////////
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            //////////////////////////////// Timer ///////////////////////////////
-
             var twowayRoadsObjects = map.twowayRoads;
             var junctionsEnumerator = map.JunctionsEnumerable.GetEnumerator();
             int junctionCount = 0;
@@ -767,19 +765,44 @@ namespace CityGen
                 }
             }
 
-            //////////////////////////////// Timer ///////////////////////////////
-            watch.Stop();
-            Debug.Log("Time cost of finding blocks: " + watch.ElapsedMilliseconds + "ms");
-            //////////////////////////////// Timer ///////////////////////////////
-
             Debug.Log("Block counts: " + map.Blocks.Count);
             debug_drawRoadmap = false;
+            yield return StartCoroutine(buildBuildings());
         }
 
         internal static float getPopulationDensityValue(Polygon polygon)
         {
             var point = polygon.Centre;
             return perlin.getValue(point.x, point.y);
+        }
+        #endregion
+
+        #region Building Generation
+        protected IEnumerator buildBuildings()
+        {
+            int buildingCount = 0;
+
+            var blocks = map.Blocks;
+            foreach (var block in blocks)
+            {
+                var lotsEnumerator = block.Lots.GetEnumerator();
+                while (lotsEnumerator.MoveNext())
+                {
+                    var lot = lotsEnumerator.Current;
+                    var buildingObject = Instantiate(buildingPrefab);
+                    buildingObject.GetComponent<Building>().construct(lot);
+
+                    ++buildingCount;
+                    if (buildingCount >= Config.BUILDING_COUNT_PER_FRAME)
+                    {
+                        buildingCount = 0;
+                        yield return null;
+                    }
+                }
+            }
+
+            debug_drawBlocks = false;
+            yield return null;
         }
         #endregion
 

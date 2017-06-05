@@ -107,6 +107,7 @@
     <Compile Include="Assets\Scripts\SimplexNoise.cs" />
     <Compile Include="Assets\Scripts\Structures\Block.cs" />
     <Compile Include="Assets\Scripts\Structures\BoundingBox.cs" />
+    <Compile Include="Assets\Scripts\Structures\Building.cs" />
     <Compile Include="Assets\Scripts\Structures\IntersectionInfo.cs" />
     <Compile Include="Assets\Scripts\Structures\Junction.cs" />
     <Compile Include="Assets\Scripts\Structures\MetaInformation.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Assets\Scripts\Utilities\GeometricTree.cs" />
     <Compile Include="Assets\Scripts\Utilities\Math.cs" />
     <Compile Include="Assets\Scripts\Utilities\Quadtree.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Triangulator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\CSharp vNext Support\AsyncTools\Plugins\AsyncBridge.Net35.xml" />
