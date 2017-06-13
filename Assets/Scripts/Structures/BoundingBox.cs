@@ -9,9 +9,20 @@ namespace CityGen.Struct
     {
         internal List<Vector3> corners = new List<Vector3>();
         protected float area = float.MaxValue;
+        private Vector3 centre = Vector3.zero;
         private float u, v;
+        private Vector3 shortEdgeDir = Vector3.zero;
+        private Vector3 longEdgeDir = Vector3.zero;
+
+        public float U { get { return u; } }
+        public float V { get { return v; } }
 
         public float Area { get { return area; } }
+
+        public Vector3 Centre { get { return centre; } }
+
+        public Vector3 ShortEdgeDir { get { return shortEdgeDir; } }
+        public Vector3 LongEdgeDir { get { return longEdgeDir; } }
 
         public BoundingBox() { }
 
@@ -77,8 +88,19 @@ namespace CityGen.Struct
 
                 corners = new List<Vector3> { cornerBL, cornerBR, cornerTR, cornerTL };
                 area = curArea;
+                centre = (cornerTL + cornerBR) * .5f;
                 this.u = u;
                 this.v = v;
+                if (u > v)
+                {
+                    longEdgeDir = projectionLine.normalized;
+                    shortEdgeDir = transNor;
+                }
+                else
+                {
+                    longEdgeDir = transNor;
+                    shortEdgeDir = projectionLine.normalized;
+                }
             }
 
             return corners.Count >= 4;

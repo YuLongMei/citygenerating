@@ -1,0 +1,163 @@
+fileFormatVersion: 2
+guid: c0acb2a75a488834f835673d54e1e62f
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: church_tower001
+    100004: venice_building1_006
+    100006: venice_building1_007
+    100008: venice_building1_008
+    100010: venice_building1_009
+    100012: venice_building1_010
+    100014: venice_building2_005
+    100016: venice_building2_006
+    100018: venice_building2_007
+    100020: venice_building2_008
+    100022: venice_building3_005
+    100024: venice_building3_006
+    100026: venice_building3_007
+    100028: venice_building3_008
+    100030: venice_building5_004
+    100032: venice_building5_005
+    100034: venice_building5_006
+    400000: //RootNode
+    400002: church_tower001
+    400004: venice_building1_006
+    400006: venice_building1_007
+    400008: venice_building1_008
+    400010: venice_building1_009
+    400012: venice_building1_010
+    400014: venice_building2_005
+    400016: venice_building2_006
+    400018: venice_building2_007
+    400020: venice_building2_008
+    400022: venice_building3_005
+    400024: venice_building3_006
+    400026: venice_building3_007
+    400028: venice_building3_008
+    400030: venice_building5_004
+    400032: venice_building5_005
+    400034: venice_building5_006
+    2300000: church_tower001
+    2300002: venice_building1_006
+    2300004: venice_building1_007
+    2300006: venice_building1_008
+    2300008: venice_building1_009
+    2300010: venice_building1_010
+    2300012: venice_building2_005
+    2300014: venice_building2_006
+    2300016: venice_building2_007
+    2300018: venice_building2_008
+    2300020: venice_building3_005
+    2300022: venice_building3_006
+    2300024: venice_building3_007
+    2300026: venice_building3_008
+    2300028: venice_building5_004
+    2300030: venice_building5_005
+    2300032: venice_building5_006
+    3300000: church_tower001
+    3300002: venice_building1_006
+    3300004: venice_building1_007
+    3300006: venice_building1_008
+    3300008: venice_building1_009
+    3300010: venice_building1_010
+    3300012: venice_building2_005
+    3300014: venice_building2_006
+    3300016: venice_building2_007
+    3300018: venice_building2_008
+    3300020: venice_building3_005
+    3300022: venice_building3_006
+    3300024: venice_building3_007
+    3300026: venice_building3_008
+    3300028: venice_building5_004
+    3300030: venice_building5_005
+    3300032: venice_building5_006
+    4300000: venice_building1_006
+    4300002: venice_building3_005
+    4300004: venice_building5_004
+    4300006: venice_building5_005
+    4300008: venice_building2_005
+    4300010: venice_building3_006
+    4300012: venice_building3_007
+    4300014: venice_building3_008
+    4300016: venice_building1_007
+    4300018: venice_building2_006
+    4300020: venice_building1_008
+    4300022: venice_building1_009
+    4300024: venice_building1_010
+    4300026: venice_building2_007
+    4300028: venice_building2_008
+    4300030: venice_building5_006
+    4300032: church_tower001
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.005
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  humanoidOversampling: 1
+  additionalBone: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

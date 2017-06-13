@@ -1,0 +1,199 @@
+fileFormatVersion: 2
+guid: 41c20463a4ca8ad4da156b35f744f102
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: skyscraper_b1
+    100002: skyscraper_b10
+    100004: skyscraper_b11
+    100006: skyscraper_b12
+    100008: skyscraper_b13
+    100010: skyscraper_b14
+    100012: skyscraper_b15
+    100014: skyscraper_b16
+    100016: skyscraper_b17
+    100018: skyscraper_b18
+    100020: skyscraper_b19
+    100022: skyscraper_b2
+    100024: skyscraper_b20
+    100026: skyscraper_b21
+    100028: skyscraper_b22
+    100030: skyscraper_b23
+    100032: skyscraper_b24
+    100034: skyscraper_b3
+    100036: skyscraper_b4
+    100038: skyscraper_b5
+    100040: skyscraper_b6
+    100042: skyscraper_b7
+    100044: skyscraper_b8
+    100046: skyscraper_b9
+    100048: //RootNode
+    400000: skyscraper_b1
+    400002: skyscraper_b10
+    400004: skyscraper_b11
+    400006: skyscraper_b12
+    400008: skyscraper_b13
+    400010: skyscraper_b14
+    400012: skyscraper_b15
+    400014: skyscraper_b16
+    400016: skyscraper_b17
+    400018: skyscraper_b18
+    400020: skyscraper_b19
+    400022: skyscraper_b2
+    400024: skyscraper_b20
+    400026: skyscraper_b21
+    400028: skyscraper_b22
+    400030: skyscraper_b23
+    400032: skyscraper_b24
+    400034: skyscraper_b3
+    400036: skyscraper_b4
+    400038: skyscraper_b5
+    400040: skyscraper_b6
+    400042: skyscraper_b7
+    400044: skyscraper_b8
+    400046: skyscraper_b9
+    400048: //RootNode
+    2300000: skyscraper_b1
+    2300002: skyscraper_b10
+    2300004: skyscraper_b11
+    2300006: skyscraper_b12
+    2300008: skyscraper_b13
+    2300010: skyscraper_b14
+    2300012: skyscraper_b15
+    2300014: skyscraper_b16
+    2300016: skyscraper_b17
+    2300018: skyscraper_b18
+    2300020: skyscraper_b19
+    2300022: skyscraper_b2
+    2300024: skyscraper_b20
+    2300026: skyscraper_b21
+    2300028: skyscraper_b22
+    2300030: skyscraper_b23
+    2300032: skyscraper_b24
+    2300034: skyscraper_b3
+    2300036: skyscraper_b4
+    2300038: skyscraper_b5
+    2300040: skyscraper_b6
+    2300042: skyscraper_b7
+    2300044: skyscraper_b8
+    2300046: skyscraper_b9
+    3300000: skyscraper_b1
+    3300002: skyscraper_b10
+    3300004: skyscraper_b11
+    3300006: skyscraper_b12
+    3300008: skyscraper_b13
+    3300010: skyscraper_b14
+    3300012: skyscraper_b15
+    3300014: skyscraper_b16
+    3300016: skyscraper_b17
+    3300018: skyscraper_b18
+    3300020: skyscraper_b19
+    3300022: skyscraper_b2
+    3300024: skyscraper_b20
+    3300026: skyscraper_b21
+    3300028: skyscraper_b22
+    3300030: skyscraper_b23
+    3300032: skyscraper_b24
+    3300034: skyscraper_b3
+    3300036: skyscraper_b4
+    3300038: skyscraper_b5
+    3300040: skyscraper_b6
+    3300042: skyscraper_b7
+    3300044: skyscraper_b8
+    3300046: skyscraper_b9
+    4300000: sky2_18
+    4300002: skyscraper_b14
+    4300004: skyscraper_b15
+    4300006: skyscraper_b16
+    4300008: skyscraper_b17
+    4300010: skyscraper_b18
+    4300012: skyscraper_b19
+    4300014: skyscraper_b20
+    4300016: skyscraper_b21
+    4300018: skyscraper_b22
+    4300020: skyscraper_b23
+    4300022: skyscraper_b13
+    4300024: skyscraper_b12
+    4300026: skyscraper_b11
+    4300028: skyscraper_b10
+    4300030: skyscraper_b9
+    4300032: skyscraper_b24
+    4300034: skyscraper_b8
+    4300036: skyscraper_b7
+    4300038: skyscraper_b6
+    4300040: skyscraper_b5
+    4300042: skyscraper_b3
+    4300044: skyscraper_b4
+    4300046: skyscraper_b2
+    4300048: skyscraper_b1
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 3
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  humanoidOversampling: 1
+  additionalBone: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -47,7 +47,13 @@
         #endregion
 
         #region Building Generation
+        internal enum BuildingGeneratingMode {
+            Procedural,
+            ReadyMade
+        }
         internal static readonly int BUILDING_COUNT_PER_FRAME = 400;
+        internal static readonly BuildingGeneratingMode BUILDING_GENERATING_MODE = 
+            BuildingGeneratingMode.ReadyMade;
         internal static readonly float MIN_AREA_FOR_BUILDING = LOT_AREA_BASIS;
         internal static readonly float MIN_COMMERCIAL_DISTRICT_POPULATION_DENSITY_VALUE =
             MIN_STREET_APPEAR_POPULATION_DENSITY_VALUE + .2f;

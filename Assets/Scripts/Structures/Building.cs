@@ -9,10 +9,57 @@ namespace CityGen.Struct
     {
         public float height;
         private Material material;
+        protected Polygon footprint;
 
         void Start()
         {
             material = GetComponent<MeshRenderer>().material;
+            footprint = null;
+        }
+
+        internal float U
+        {
+            get
+            {
+                return footprint == null ?
+                    0f : footprint.boundingBox.U;
+            }
+        }
+
+        internal float V
+        {
+            get
+            {
+                return footprint == null ?
+                    0f : footprint.boundingBox.V;
+            }
+        }
+
+        internal Vector3 Centre
+        {
+            get
+            {
+                return footprint == null ?
+                    Vector3.zero : footprint.boundingBox.Centre;
+            }
+        }
+
+        internal Vector3 ShortEdgeDir
+        {
+            get
+            {
+                return footprint == null ?
+                    Vector3.zero : footprint.boundingBox.ShortEdgeDir;
+            }
+        }
+
+        internal Vector3 LongEdgeDir
+        {
+            get
+            {
+                return footprint == null ?
+                    Vector3.zero : footprint.boundingBox.LongEdgeDir;
+            }
         }
 
         protected bool canBeConstructed(Polygon footprint)
@@ -21,18 +68,37 @@ namespace CityGen.Struct
                 footprint.boundingBox.AspectRatio < Config.MAX_ASPECT_RATIO;
         }
 
-        public bool construct(Polygon footprint)
+        public bool construct(Polygon footprint, BuildingPool pool)
         {
             if (!canBeConstructed(footprint))
             {
                 return false;
             }
 
+            this.footprint = footprint;
+            // Height of the building.
+            height = buildingHeight(footprint.Area, footprint.getCentrePopulationDensity());
+
+            switch (Config.BUILDING_GENERATING_MODE)
+            {
+                case Config.BuildingGeneratingMode.Procedural:
+                    constructProcedurally();
+                    break;
+                case Config.BuildingGeneratingMode.ReadyMade:
+                    buildUsingReadyMadeModel(pool);
+                    break;
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        protected void constructProcedurally()
+        {
             var verticesCount = footprint.vertices.Count - 1;
             var vertices = footprint.vertices.GetRange(0, verticesCount);
 
-            // Height of the building.
-            height = buildingHeight(footprint.Area, footprint.getCentrePopulationDensity());
             int layers = 1;// (int)(height / Config.BUILDING_LAYER_HEIGHT);
 
             System.Func<Vector3, Vector2> V3_to_V2 =
@@ -76,7 +142,7 @@ namespace CityGen.Struct
                         mesh_vertices[r], mesh_vertices[q], mesh_vertices[s],
                     });
                 mesh_triangles.AddRange(
-                    new int[] 
+                    new int[]
                     {
                         count, count + 1, count + 2,
                         count + 3, count + 4, count + 5
@@ -101,8 +167,12 @@ namespace CityGen.Struct
             MeshFilter filter = gameObject.AddComponent<MeshFilter>();
             filter.mesh = mesh;
             gameObject.GetComponent<MeshCollider>().sharedMesh = mesh;
+        }
 
-            return true;
+        protected void buildUsingReadyMadeModel(BuildingPool pool)
+        {
+            var model = pool.getModel(this);
+            model.parent = transform;
         }
 
         protected float buildingHeight(float area, float populationDensity)

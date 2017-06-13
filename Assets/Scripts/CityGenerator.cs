@@ -22,6 +22,7 @@ namespace CityGen
 
         private MapOrganizer map;
         private ParameterMaps paraMaps;
+        private BuildingPool pool;
 
         // local constraints as delegate
         delegate bool LocalConstraint(
@@ -42,6 +43,7 @@ namespace CityGen
             var length = maxMapPostion.y - minMapPostion.y;
             paraMaps = new ParameterMaps(
                 (int)width, (int)length);
+            pool = GetComponent<BuildingPool>();
 
             GameObject terrainObject =
                 Instantiate(terrainPrefab, new Vector3(minMapPostion.x, 0f, minMapPostion.y), Quaternion.identity);
@@ -790,7 +792,7 @@ namespace CityGen
                 {
                     var lot = lotsEnumerator.Current;
                     var buildingObject = Instantiate(buildingPrefab);
-                    buildingObject.GetComponent<Building>().construct(lot);
+                    buildingObject.GetComponent<Building>().construct(lot, pool);
 
                     ++buildingCount;
                     if (buildingCount >= Config.BUILDING_COUNT_PER_FRAME)
