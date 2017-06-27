@@ -121,6 +121,7 @@
     <Compile Include="Assets\Scripts\Utilities\GeometricTree.cs" />
     <Compile Include="Assets\Scripts\Utilities\Math.cs" />
     <Compile Include="Assets\Scripts\Utilities\Quadtree.cs" />
+    <Compile Include="Assets\Scripts\Utilities\TextureTiler.cs" />
     <Compile Include="Assets\Scripts\Utilities\Triangulator.cs" />
   </ItemGroup>
   <ItemGroup>

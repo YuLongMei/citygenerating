@@ -88,6 +88,7 @@ namespace CityGen.Struct
                     buildUsingReadyMadeModel(pool);
                     break;
                 default:
+                    constructProcedurally();
                     break;
             }
 

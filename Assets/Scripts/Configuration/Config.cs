@@ -3,7 +3,7 @@
     public static class Config
     {
         #region Input Simulation
-        internal static readonly float PARAMAP_GRANULARITY = 5000f;//800f;
+        internal static readonly float PARAMAP_GRANULARITY = 2500f;
         internal static readonly float MIN_POPULATION_DENSITY_VALUE = 0.5f;
         internal static readonly float MAX_POPULATION_DENSITY_VALUE = 1f;
         #endregion
@@ -13,6 +13,7 @@
         internal static readonly float HIGHWAY_DEFAULT_LENGTH = 100f;
         internal static readonly float STREET_DEFAULT_WIDTH = 6f;
         internal static readonly float STREET_DEFAULT_LENGTH = 15f;
+        internal static readonly float ROAD_DEFAULT_THICKNESS = 0.05f;
         #endregion
 
         #region Road Generation
@@ -37,7 +38,7 @@
         #region Allotment Generation
         internal static readonly int JUNCTION_COUNT_TO_FIND_BLOCKS_PER_FRAME = 300;
         internal static readonly float EPSILON_TRANSLATION_FOR_OBB = .2f;
-        internal static readonly float MAX_BLOCK_AREA = 3 * STREET_SEGMENT_MAX_LENGTH * STREET_SEGMENT_MAX_LENGTH;
+        internal static readonly float MAX_BLOCK_AREA = 5 * STREET_SEGMENT_MAX_LENGTH * STREET_SEGMENT_MAX_LENGTH;
         internal static readonly float SPLITTER_LEFT_LIMIT = .35f;
         internal static readonly float SPLITTER_RIGHT_LIMIT = .65f;
         internal static readonly float LOT_AREA_BASIS = 50f;

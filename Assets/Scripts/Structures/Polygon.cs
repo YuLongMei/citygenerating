@@ -113,6 +113,7 @@ namespace CityGen.Struct
                     return polygons;
                 }
 
+                intersectionIndexes.Sort();
                 List<Vector3> leftVertices = new List<Vector3>();
                 List<Vector3> rightVertices = new List<Vector3>();
 

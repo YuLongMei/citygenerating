@@ -19,6 +19,8 @@ namespace CityGen
 
         public GameObject terrainPrefab;
         public GameObject buildingPrefab;
+        public GameObject streetPrefab;
+        public GameObject highwayPrefab;
 
         private MapOrganizer map;
         private ParameterMaps paraMaps;
@@ -58,7 +60,7 @@ namespace CityGen
 
         void Update()
         {
-            drawDebug();
+            //drawDebug();
         }
 
         protected static SimulatedParaMap perlin;
@@ -78,6 +80,11 @@ namespace CityGen
                 Random.Range(-99999f, 99999f),
                 Random.Range(-99999f, 99999f));
             // ------------------------------TEST---------------------------------
+
+#if UNITY_EDITOR
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+#endif //UNITY_EDITOR
 
             // priority queue
             var priQueue = new IntervalHeap<RoadSegment<MetaInformation>>();
@@ -155,14 +162,69 @@ namespace CityGen
                 }
             }
 
+#if UNITY_EDITOR
+            stopwatch.Stop();
             Debug.Log("Road counts: " + map.Roads.Count);
             Debug.Log("Junction counts: " + map.Junctions.Count);
+            Debug.Log("Time on generating roadmap: " + stopwatch.ElapsedMilliseconds);
             debug_drawBlocks = true;
+#endif //UNITY_EDITOR
+
+            yield return StartCoroutine(constructRoads());
+        }
+
+        #region Road Generation
+        protected IEnumerator constructRoads()
+        {
+#if UNITY_EDITOR
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+#endif //UNITY_EDITOR
+
+            var roadsEnumerator = map.RoadsEnumerable.GetEnumerator();
+            int roadCount = 0;
+
+            while (roadsEnumerator.MoveNext())
+            {
+                var road = roadsEnumerator.Current;
+                GameObject roadObject;
+
+                // transform
+                var position = (road.start.position + road.end.position) * .5f;
+                var rotation = Quaternion.FromToRotation(Vector3.forward, road.Direction);
+                var scale = new Vector3(
+                    road.width,
+                    Config.ROAD_DEFAULT_THICKNESS,
+                    road.Length);
+
+                if (road.width == Config.HIGHWAY_DEFAULT_WIDTH)
+                {
+                    roadObject = Instantiate(highwayPrefab, position, rotation);
+                    roadObject.transform.localScale = scale;
+                }
+                else if (road.width == Config.STREET_DEFAULT_WIDTH)
+                {
+                    roadObject = Instantiate(streetPrefab, position, rotation);
+                    roadObject.transform.localScale = scale;
+                }
+
+                ++roadCount;
+                if (roadCount >= Config.ROAD_COUNT_PER_FRAME)
+                {
+                    roadCount = 0;
+                    yield return null;
+                }
+            }
+
+#if UNITY_EDITOR
+            stopwatch.Stop();
+            Debug.Log("Road models counts: " + map.Roads.Count);
+            Debug.Log("Time on generating roads models: " + stopwatch.ElapsedMilliseconds);
+#endif //UNITY_EDITOR
 
             yield return StartCoroutine(findBlocks());
         }
 
-        #region Road Generation
         #region Local Constraint
         /// <summary>
         /// General local constraint
@@ -412,8 +474,7 @@ namespace CityGen
             }
 
             return seg.tooShortJudgment ? 
-                seg.TotalLength <= Config.SHORTEST_ROAD_LENGTH : seg.discarded;
-            //return false;
+                (seg.TotalLength <= Config.SHORTEST_ROAD_LENGTH) || seg.discarded : seg.discarded;
         }
         #endregion
 
@@ -698,6 +759,11 @@ namespace CityGen
         #region Allotment Generation
         protected IEnumerator findBlocks()
         {
+#if UNITY_EDITOR
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+#endif //UNITY_EDITOR
+
             var twowayRoadsObjects = map.twowayRoads;
             var junctionsEnumerator = map.JunctionsEnumerable.GetEnumerator();
             int junctionCount = 0;
@@ -767,8 +833,13 @@ namespace CityGen
                 }
             }
 
+#if UNITY_EDITOR
+            stopwatch.Stop();
             Debug.Log("Block counts: " + map.Blocks.Count);
+            Debug.Log("Time on generating blocks: " + stopwatch.ElapsedMilliseconds);
             debug_drawRoadmap = false;
+#endif //UNITY_EDITOR
+
             yield return StartCoroutine(buildBuildings());
         }
 
@@ -782,7 +853,13 @@ namespace CityGen
         #region Building Generation
         protected IEnumerator buildBuildings()
         {
+#if UNITY_EDITOR
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+#endif //UNITY_EDITOR
+
             int buildingCount = 0;
+            int totalCount = 0;
 
             var blocks = map.Blocks;
             foreach (var block in blocks)
@@ -795,6 +872,7 @@ namespace CityGen
                     buildingObject.GetComponent<Building>().construct(lot, pool);
 
                     ++buildingCount;
+                    ++totalCount;
                     if (buildingCount >= Config.BUILDING_COUNT_PER_FRAME)
                     {
                         buildingCount = 0;
@@ -803,7 +881,13 @@ namespace CityGen
                 }
             }
 
+#if UNITY_EDITOR
+            stopwatch.Stop();
+            Debug.Log("Buildings counts: " + totalCount);
+            Debug.Log("Time on generating buildings: " + stopwatch.ElapsedMilliseconds);
             debug_drawBlocks = false;
+#endif //UNITY_EDITOR
+
             yield return null;
         }
         #endregion
